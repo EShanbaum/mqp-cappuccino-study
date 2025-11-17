@@ -141,6 +141,10 @@ export function ResponseBlock({
 
   const [recordingStates, setRecordingStates] = useState<Record<string, boolean>>({});
 
+  const [isRecording, setIsRecording] = useState(
+    () => !!studyConfig.uiConfig.recordAudio,
+  );
+
   const answerValidator = useAnswerField(responsesWithDefaults, currentStep, storedAnswer || {});
   useEffect(() => {
     if (storedAnswer) {
@@ -321,6 +325,39 @@ export function ResponseBlock({
     return () => {};
   }, [checkAnswerProvideFeedback, nextOnEnter]);
 
+  useEffect(() => {
+    setRecordingStates((prev) => {
+      const next: Record<string, boolean> = { ...prev };
+
+      allResponsesWithDefaults.forEach((response) => {
+        if (response.withMicrophone) {
+          next[response.id] = isRecording;
+        }
+      });
+
+      return next;
+    });
+  }, [isRecording, allResponsesWithDefaults]);
+
+  useEffect(() => {
+    setIsRecording(!!studyConfig.uiConfig.recordAudio);
+  }, [studyConfig.uiConfig.recordAudio, studyConfig]);
+
+  const toggleRecording = useCallback((responseId: string): void => {
+    setIsRecording((prev) => {
+      const next = !prev;
+
+      studyConfig.uiConfig.recordAudio = next;
+
+      setRecordingStates((prevStates) => ({
+        ...prevStates,
+        [responseId]: next,
+      }));
+
+      return next;
+    });
+  }, [studyConfig]);
+
   const nextButtonText = useMemo(() => config?.nextButtonText ?? studyConfig.uiConfig.nextButtonText ?? 'Next', [config, studyConfig]);
 
   let index = 0;
@@ -373,10 +410,7 @@ export function ResponseBlock({
                             : '/src/components/response/mic_images/mic_icon.png'
                         }
                         style={{ maxWidth: '45px', cursor: 'pointer' }}
-                        onClick={() => setRecordingStates((prev) => ({
-                          ...prev,
-                          [response.id]: !prev[response.id],
-                        }))}
+                        onClick={() => toggleRecording(response.id)}
                       />
                     )}
                     <FeedbackAlert
