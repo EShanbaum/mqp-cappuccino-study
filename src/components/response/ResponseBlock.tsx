@@ -3,7 +3,7 @@ import {
 } from '@mantine/core';
 
 import React, {
-  useEffect, useMemo, useState, useCallback,
+  useEffect, useMemo, useState, useCallback, useRef,
 } from 'react';
 import { useNavigate } from 'react-router';
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -62,6 +62,8 @@ export function ResponseBlock({
   const storedAnswer = useMemo(() => currentProvenance?.form || status?.answer, [currentProvenance, status]);
   const storedAnswerData = useStoredAnswer();
   const formOrders: Record<string, string[]> = useMemo(() => storedAnswerData?.formOrder || {}, [storedAnswerData]);
+
+  const audioStream = useRef<MediaRecorder | null>(null);
 
   const navigate = useNavigate();
 
@@ -140,6 +142,8 @@ export function ResponseBlock({
   const identifier = useCurrentIdentifier();
 
   const [recordingStates, setRecordingStates] = useState<Record<string, boolean>>({});
+
+  const [audioUrls, setAudioUrls] = useState<Record<string, string | null>>({});
 
   const [isRecording, setIsRecording] = useState(
     () => !!studyConfig.uiConfig.recordAudio,
@@ -343,20 +347,90 @@ export function ResponseBlock({
     setIsRecording(!!studyConfig.uiConfig.recordAudio);
   }, [studyConfig.uiConfig.recordAudio, studyConfig]);
 
-  const toggleRecording = useCallback((responseId: string): void => {
-    setIsRecording((prev) => {
-      const next = !prev;
+  const participantId = useStoreSelector((state) => state.participantId);
 
-      studyConfig.uiConfig.recordAudio = next;
+  const toggleRecording = useCallback(async (responseId: string): Promise<void> => {
+    // If already recording for this response -> stop
+    if (recordingStates[responseId] && audioStream.current) {
+      try {
+        audioStream.current.stop();
+      } catch {
+        // ignore
+      }
 
-      setRecordingStates((prevStates) => ({
-        ...prevStates,
-        [responseId]: next,
-      }));
+      // stop tracks if present
+      try {
+        const stream = (audioStream.current as unknown as { stream?: MediaStream })?.stream;
+        if (stream) {
+          stream.getAudioTracks().forEach((t) => { t.stop(); stream.removeTrack(t); });
+        }
+      } catch {
+        // ignore
+      }
 
-      return next;
-    });
-  }, [studyConfig]);
+      setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: false }));
+      // audioStream.current will be nulled in onstop handler
+      return;
+    }
+
+    // Start new recording
+    try {
+      const micStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+
+      const mediaRecorder = new MediaRecorder(micStream);
+      audioStream.current = mediaRecorder;
+
+      let chunks: Blob[] = [];
+      mediaRecorder.addEventListener('dataavailable', (ev: BlobEvent) => {
+        if (ev.data && ev.data.size > 0) chunks.push(ev.data);
+      });
+
+      mediaRecorder.addEventListener('start', () => {
+        chunks = [];
+        setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: true }));
+      });
+
+      mediaRecorder.addEventListener('stop', async () => {
+        const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
+
+        // Name the task using identifier + response id so recordings are unique per response
+        const taskName = `${identifier}_${responseId}`;
+
+        // Ensure storage engine has a current participant ID set and use that for both save and URL retrieval
+        try {
+          const currentPid = await storageEngine?.getCurrentParticipantId(participantId) || participantId;
+
+          // Save to storage engine (uses internal currentParticipantId)
+          await storageEngine?.saveAudioRecording(blob, taskName);
+
+          // Try to get a playable URL from storage engine; pass the participant id we obtained
+          const urlFromStorage = await storageEngine?.getAudioUrl(taskName, currentPid as string);
+          const finalUrl = urlFromStorage || URL.createObjectURL(blob);
+          setAudioUrls((prev) => ({ ...prev, [responseId]: finalUrl }));
+        } catch (error) {
+          // If anything goes wrong with storage, fall back to a local URL so user can play immediately
+          console.error('Failed saving or retrieving audio from storage engine', error);
+          const url = URL.createObjectURL(blob);
+          setAudioUrls((prev) => ({ ...prev, [responseId]: url }));
+        }
+
+        // stop and cleanup tracks
+        try {
+          micStream.getAudioTracks().forEach((t) => { t.stop(); micStream.removeTrack(t); });
+        } catch {
+          // ignore
+        }
+
+        audioStream.current = null;
+        setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: false }));
+      });
+
+      mediaRecorder.start(1000);
+    } catch (error) {
+      console.error('Could not start audio recording', error);
+      setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: false }));
+    }
+  }, [identifier, recordingStates, storageEngine, participantId]);
 
   const nextButtonText = useMemo(() => config?.nextButtonText ?? studyConfig.uiConfig.nextButtonText ?? 'Next', [config, studyConfig]);
 
@@ -403,15 +477,21 @@ export function ResponseBlock({
                       disabled={disabledAttempts}
                     />
                     {response.withMicrophone && (
-                      <img
-                        src={
-                          recordingStates[response.id]
-                            ? '/src/components/response/mic_images/stop_icon.png'
-                            : '/src/components/response/mic_images/mic_icon.png'
-                        }
-                        style={{ maxWidth: '45px', cursor: 'pointer' }}
-                        onClick={() => toggleRecording(response.id)}
-                      />
+                      <>
+                        <img
+                          src={
+                            recordingStates[response.id]
+                              ? '/src/components/response/mic_images/stop_icon.png'
+                              : '/src/components/response/mic_images/mic_icon.png'
+                          }
+                          style={{ maxWidth: '45px', cursor: 'pointer' }}
+                          onClick={() => toggleRecording(response.id)}
+                        />
+
+                        {audioUrls[response.id] && (
+                          <audio controls src={audioUrls[response.id] as string} style={{ display: 'block', marginTop: 8 }} />
+                        )}
+                      </>
                     )}
                     <FeedbackAlert
                       response={response}
