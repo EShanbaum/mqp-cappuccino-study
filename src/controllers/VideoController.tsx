@@ -88,7 +88,7 @@ export function VideoController({ currentConfig }: { currentConfig: VideoCompone
     fetchVideo();
   }, [url]);
 
-  const sources = useMemo<Plyr.Source[]>(() => {
+  const sources = useMemo(() => {
     if (url.includes('youtube')) {
       if (!isValidYouTubeUrl(url)) {
         setAssetFound(false);
@@ -121,7 +121,7 @@ export function VideoController({ currentConfig }: { currentConfig: VideoCompone
     ];
   }, [url]);
 
-  const options = useMemo<Plyr.Options>(() => ({
+  const options = useMemo(() => ({
     controls: [
       currentConfig.forceCompletion !== false ? 'play-large' : 'play',
       'current-time',
