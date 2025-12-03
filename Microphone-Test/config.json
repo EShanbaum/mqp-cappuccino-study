@@ -1,0 +1,85 @@
+{
+  "$schema": "https://raw.githubusercontent.com/revisit-studies/study/v2.3.1/src/parser/StudyConfigSchema.json",
+  "studyMetadata": {
+    "title": "Mic Test",
+    "version": "pilot",
+    "authors": [
+      "The MQP Team"
+    ],
+    "date": "2025-11-01",
+    "description": "Testing out microphone functionality",
+    "organizations": [
+      "WPI"
+    ]
+  },
+  "uiConfig": {
+    "contactEmail": "contact@revisit.dev",
+    "helpTextPath": "demo-image/assets/help.md",
+    "logoPath": "revisitAssets/revisitLogoSquare.svg",
+    "withProgressBar": true,
+    "autoDownloadStudy": false,
+    "withSidebar": true,
+    "nextOnEnter": true
+  },
+  "components": {
+    "externalImage": {
+      "type": "image",
+      "path": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Shaki_waterfall.jpg",
+      "style": {
+        "width": "800px"
+      },
+      "nextButtonLocation": "sidebar",
+      "response": [
+        {
+          "id": "externalImage-response",
+          "prompt": "What is this a picture of?",
+          "location": "sidebar",
+          "type": "shortText",
+          "required": false,
+          "withMicrophone": true
+        },
+        {
+            "id": "externalImage-radio",
+            "prompt": "likertTest",
+            "location": "sidebar",
+            "type": "likert",
+            "numItems": 5,
+            "withMicrophone": true
+        }
+      ]
+    },
+    "Image2": {
+      "type": "image",
+      "path": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Shaki_waterfall.jpg",
+      "style": {
+        "width": "800px"
+      },
+      "nextButtonLocation": "sidebar",
+      "response": [
+        {
+          "id": "image2-response",
+          "prompt": "What is this a picture of?",
+          "location": "sidebar",
+          "type": "shortText",
+          "required": false,
+          "withMicrophone": false
+        },
+        {
+            "id": "image2-radio",
+            "prompt": "likertTest",
+            "location": "sidebar",
+            "type": "likert",
+            "numItems": 5,
+            "withMicrophone": false
+        }
+      ]
+    }
+  },
+  "sequence": {
+    "order": "fixed",
+    "components": [
+      "externalImage",
+      "Image2"
+    ]
+  }
+}
