@@ -355,21 +355,20 @@ export function ResponseBlock({
       try {
         audioStream.current.stop();
       } catch {
-        // ignore
+        //
       }
 
       // stop tracks if present
       try {
-        const stream = (audioStream.current as unknown as { stream?: MediaStream })?.stream;
+        const { stream } = audioStream.current;
         if (stream) {
           stream.getAudioTracks().forEach((t) => { t.stop(); stream.removeTrack(t); });
         }
       } catch {
-        // ignore
+        //
       }
 
       setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: false }));
-      // audioStream.current will be nulled in onstop handler
       return;
     }
 
@@ -392,33 +391,27 @@ export function ResponseBlock({
 
       mediaRecorder.addEventListener('stop', async () => {
         const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
-
-        // Name the task using identifier + response id so recordings are unique per response
         const taskName = `${identifier}_${responseId}`;
 
-        // Ensure storage engine has a current participant ID set and use that for both save and URL retrieval
         try {
           const currentPid = await storageEngine?.getCurrentParticipantId(participantId) || participantId;
 
-          // Save to storage engine (uses internal currentParticipantId)
           await storageEngine?.saveAudioRecording(blob, taskName);
 
-          // Try to get a playable URL from storage engine; pass the participant id we obtained
           const urlFromStorage = await storageEngine?.getAudioUrl(taskName, currentPid as string);
           const finalUrl = urlFromStorage || URL.createObjectURL(blob);
           setAudioUrls((prev) => ({ ...prev, [responseId]: finalUrl }));
         } catch (error) {
-          // If anything goes wrong with storage, fall back to a local URL so user can play immediately
+          // fall back to a local URL so user can play immediately
           console.error('Failed saving or retrieving audio from storage engine', error);
           const url = URL.createObjectURL(blob);
           setAudioUrls((prev) => ({ ...prev, [responseId]: url }));
         }
 
-        // stop and cleanup tracks
         try {
           micStream.getAudioTracks().forEach((t) => { t.stop(); micStream.removeTrack(t); });
         } catch {
-          // ignore
+          //
         }
 
         audioStream.current = null;
