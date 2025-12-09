@@ -23,6 +23,11 @@
         "nextOnEnter": true
     },
     "components": {
+        "Introduction":{
+            "type": "markdown",
+            "path": "Mic-User-Study/assets/intro.md",
+            "response": []
+        },
         "B0-unobscured": {
             "type": "image",
             "description": "unobscured image of b0 stimuli",
@@ -1277,16 +1282,67 @@
                     ]
                 }
             ]
+        },
+        "Feedback": {
+            "type": "questionnaire",
+            "response": [
+                {
+                    "id": "mic-user-study/feedback-usefulness",
+                    "prompt": "How useful did you find the ability to record audio explanations alongside your survey answers?",
+                    "type": "likert",
+                    "leftLabel": "Not Useful",
+                    "rightLabel": "Very Useful",
+                    "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/feedback-situations",
+                    "prompt": "In what situations do you think this feature would be most useful?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-confusion",
+                    "prompt": "Did you encounter any confusion while using the feature? If so, what caused it?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-which-questions",
+                    "prompt": "If you didn’t use the audio feature for certain questions, what stopped you?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-quality",
+                    "prompt": "How would you rate the audio recording quality?",
+                    "type": "likert",
+                    "leftLabel": "Low Quality",
+                    "rightLabel": "High Quality",
+                    "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/feedback-suggestions",
+                    "prompt": "What improvements would you suggest for the audio recording experience? Include any additional features you believe would be useful.",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-likeliness",
+                    "prompt": "How likely would you be to use this audio feature in a real survey? (",
+                    "type": "likert",
+                    "leftLabel": "Not Likely At All",
+                    "rightLabel": "Very Likely",
+                    "numItems": 5
+                }
+            ]
         }
     },
     "sequence": {
         "order": "fixed",
         "components": [
+            "Introduction",
             "B0-unobscured",
             "B2A-unobscured",
             "B1B-unobscured",
             "B1C-unobscured",
-            "B1D-unobscured"
+            "B1D-unobscured",
+            "Feedback"
         ]
     }
 }
