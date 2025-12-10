@@ -7,6 +7,8 @@ import React, {
 } from 'react';
 import { useNavigate } from 'react-router';
 import { Registry, initializeTrrack } from '@trrack/core';
+import { PREFIX } from '../../utils/Prefix';
+
 import {
   IndividualComponent,
   ResponseBlockLocation,
@@ -474,9 +476,10 @@ export function ResponseBlock({
                         <img
                           src={
                             recordingStates[response.id]
-                              ? '/src/components/response/mic_images/stop_icon.png'
-                              : '/src/components/response/mic_images/mic_icon.png'
+                              ? `${PREFIX}src/components/response/mic_images/stop_icon.png`
+                              : `${PREFIX}src/components/response/mic_images/mic_icon.png`
                           }
+                          alt={recordingStates[response.id] ? 'Stop recording' : 'Start recording'}
                           style={{ maxWidth: '45px', cursor: 'pointer' }}
                           onClick={() => toggleRecording(response.id)}
                         />
