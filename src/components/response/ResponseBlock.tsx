@@ -476,8 +476,8 @@ export function ResponseBlock({
                         <img
                           src={
                             recordingStates[response.id]
-                              ? `${PREFIX}src/components/response/mic_images/stop_icon.png`
-                              : `${PREFIX}src/components/response/mic_images/mic_icon.png`
+                              ? `${PREFIX}mic_images/stop_icon.png`
+                              : `${PREFIX}mic_images/mic_icon.png`
                           }
                           alt={recordingStates[response.id] ? 'Stop recording' : 'Start recording'}
                           style={{ maxWidth: '45px', cursor: 'pointer' }}
