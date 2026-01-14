@@ -26,7 +26,14 @@
         "Introduction":{
             "type": "markdown",
             "path": "Mic-User-Study/assets/intro.md",
-            "response": []
+            "response": [
+                {
+                    "id": "Prolific-Id",
+                    "prompt": "What is your Prolific ID",
+                    "location":"belowStimulus",
+                    "type":"shortText"
+                }
+            ]
         },
         "B0-unobscured": {
             "type": "image",
@@ -1329,6 +1336,14 @@
                     "leftLabel": "Not Likely At All",
                     "rightLabel": "Very Likely",
                     "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/prolific-redirect",
+                    "prompt": "Please Submit before using this code in Prolific: C18Q8NZZ",
+                    "type":"buttons",
+                    "options":[
+                        "Understood"
+                    ]
                 }
             ]
         }
