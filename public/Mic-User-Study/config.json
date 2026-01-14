@@ -1331,7 +1331,7 @@
                 },
                 {
                     "id": "mic-user-study/feedback-likeliness",
-                    "prompt": "How likely would you be to use this audio feature in a real survey? (",
+                    "prompt": "How likely would you be to use this audio feature in a real survey?",
                     "type": "likert",
                     "leftLabel": "Not Likely At All",
                     "rightLabel": "Very Likely",
@@ -1340,7 +1340,7 @@
                 {
                     "id": "mic-user-study/prolific-redirect",
                     "prompt": "Please Submit before using this code in Prolific: C18Q8NZZ",
-                    "type":"buttons",
+                    "type":"checkbox",
                     "options":[
                         "Understood"
                     ]
