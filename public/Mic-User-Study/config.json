@@ -41,7 +41,9 @@
             "path": "Mic-User-Study/assets/b0-obscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
-                "width": "800px"
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
             },
             "response": [
                 {
@@ -292,7 +294,9 @@
             "path": "Mic-User-Study/assets/b0-unobscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
-                "width": "800px"
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
             },
             "response": [
                 {
@@ -543,7 +547,9 @@
             "path": "Mic-User-Study/assets/B1C-obscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
-                "width": "800px"
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
             },
             "response": [
                 {
@@ -794,7 +800,9 @@
             "path": "Mic-User-Study/assets/B1C-unobscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
-                "width": "800px"
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
             },
             "response": [
                 {
