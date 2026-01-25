@@ -50,7 +50,8 @@
     "test-skip-logic",
     "test-step-logic",
     "Custom-Stimuli",
-    "Microphone-Test"
+    "Microphone-Test",
+    "Mic-User-Study"
 
   ],
   "configs": {
@@ -221,6 +222,10 @@
     },
     "example-VLAT-adaptive": {
       "path": "example-VLAT-adaptive/config.json",
+      "test": true
+    },
+    "Mic-User-Study": {
+      "path": "Mic-User-Study/config.json",
       "test": true
     },
     "Custom-Stimuli":{

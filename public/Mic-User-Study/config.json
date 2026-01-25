@@ -1,0 +1,1119 @@
+
+{  
+    "$schema": "https://raw.githubusercontent.com/revisit-studies/study/v2.1.1/src/parser/StudyConfigSchema.json",
+    "studyMetadata": {
+        "title": "Mic User Study",
+        "version": "pilot",
+        "authors": [
+            "The MQP Team"
+        ],
+        "date": "2025-12-02",
+        "description": "",
+        "organizations": [
+            "WPI"
+        ]
+  },
+    "uiConfig": {
+        "contactEmail": "contact@revisit.dev",
+        "helpTextPath": "demo-image/assets/help.md",
+        "logoPath": "revisitAssets/revisitLogoSquare.svg",
+        "withProgressBar": true,
+        "autoDownloadStudy": false,
+        "withSidebar": true,
+        "nextOnEnter": true
+    },
+    "components": {
+        "Introduction":{
+            "type": "markdown",
+            "path": "Mic-User-Study/assets/intro.md",
+            "response": [
+                {
+                    "id": "Prolific-Id",
+                    "prompt": "What is your Prolific ID",
+                    "location":"belowStimulus",
+                    "type":"shortText"
+                }
+            ]
+        },
+        "B0-obscured": {
+            "type": "image",
+            "description": "obscured image of b0 stimuli",
+            "path": "Mic-User-Study/assets/b0-obscured.png",
+            "instruction": "Please answer the following questions about the maker of this chart",
+            "style": {
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
+            },
+            "response": [
+                {
+                    "id": "mic-user-study/b0-obscured-encounter",
+                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Scroll",
+                        "Read"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-id",
+                    "prompt": "Who do you think is most likely responsible for having this image created?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Individual",
+                        "Organization",
+                        "Education",
+                        "Business",
+                        "News",
+                        "Political"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-id-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-age",
+                    "prompt": "What generation are they most likely from?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Boomer",
+                        "Gen-X",
+                        "Millenial",
+                        "Gen-Z"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-age-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-gender",
+                    "prompt": "What gender do they most likely identify with?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Male",
+                        "Female",
+                        "Other"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-gender-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-design",
+                    "prompt": "Are they likely a layperson or professional in graphic design?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-data",
+                    "prompt": "Are they likely a layperson or professional in data analysis?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-politics",
+                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Left-Leaning",
+                            "value": 0
+                        },
+                        {
+                            "label": "Right-Leaning",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-alignment",
+                    "prompt": "Do they likely share your values?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "No",
+                            "value": 0
+                        },
+                        {
+                            "label": "Yes",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-intention",
+                    "prompt": "Is their intent more likely to persuade or inform?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Persuade",
+                            "value": 0
+                        },
+                        {
+                            "label": "Inform",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-trust",
+                    "prompt": "How trustworthy are they?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Untrustworthy",
+                            "value": 0
+                        },
+                        {
+                            "label": "Trustworthy",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-beauty",
+                    "prompt": "How aesthetically pleasing is this image?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not at all",
+                            "value": 0
+                        },
+                        {
+                            "label": "Very much",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-obscured-explain",
+                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
+                    "location": "sidebar",
+                    "type": "checkbox",
+                    "options": [
+                        "Click here once finished responding"
+                    ]
+                }
+            ]
+        },
+        "B0-unobscured": {
+            "type": "image",
+            "description": "unobscured image of b0 stimuli",
+            "path": "Mic-User-Study/assets/b0-unobscured.png",
+            "instruction": "Please answer the following questions about the maker of this chart",
+            "style": {
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
+            },
+            "response": [
+                {
+                    "id": "mic-user-study/b0-unobscured-encounter",
+                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Scroll",
+                        "Read"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-id",
+                    "prompt": "Who do you think is most likely responsible for having this image created?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Individual",
+                        "Organization",
+                        "Education",
+                        "Business",
+                        "News",
+                        "Political"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-id-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-age",
+                    "prompt": "What generation are they most likely from?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Boomer",
+                        "Gen-X",
+                        "Millenial",
+                        "Gen-Z"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-age-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-gender",
+                    "prompt": "What gender do they most likely identify with?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Male",
+                        "Female",
+                        "Other"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-gender-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-design",
+                    "prompt": "Are they likely a layperson or professional in graphic design?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-data",
+                    "prompt": "Are they likely a layperson or professional in data analysis?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-politics",
+                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Left-Leaning",
+                            "value": 0
+                        },
+                        {
+                            "label": "Right-Leaning",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-alignment",
+                    "prompt": "Do they likely share your values?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "No",
+                            "value": 0
+                        },
+                        {
+                            "label": "Yes",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-intention",
+                    "prompt": "Is their intent more likely to persuade or inform?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Persuade",
+                            "value": 0
+                        },
+                        {
+                            "label": "Inform",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-trust",
+                    "prompt": "How trustworthy are they?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Untrustworthy",
+                            "value": 0
+                        },
+                        {
+                            "label": "Trustworthy",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-beauty",
+                    "prompt": "How aesthetically pleasing is this image?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not at all",
+                            "value": 0
+                        },
+                        {
+                            "label": "Very much",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b0-unobscured-explain",
+                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
+                    "location": "sidebar",
+                    "type": "checkbox",
+                    "options": [
+                        "Click here once finished responding"
+                    ]
+                }
+            ]
+        },
+        "B1C-obscured": {
+            "type": "image",
+            "description": "obscured B1-C stimulus",
+            "path": "Mic-User-Study/assets/B1C-obscured.png",
+            "instruction": "Please answer the following questions about the maker of this chart",
+            "style": {
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
+            },
+            "response": [
+                {
+                    "id": "mic-user-study/b1c-obscured-encounter",
+                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Scroll",
+                        "Read"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-id",
+                    "prompt": "Who do you think is most likely responsible for having this image created?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Individual",
+                        "Organization",
+                        "Education",
+                        "Business",
+                        "News",
+                        "Political"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-id-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-age",
+                    "prompt": "What generation are they most likely from?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Boomer",
+                        "Gen-X",
+                        "Millenial",
+                        "Gen-Z"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-age-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-gender",
+                    "prompt": "What gender do they most likely identify with?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Male",
+                        "Female",
+                        "Other"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-gender-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-design",
+                    "prompt": "Are they likely a layperson or professional in graphic design?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-data",
+                    "prompt": "Are they likely a layperson or professional in data analysis?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-politics",
+                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Left-Leaning",
+                            "value": 0
+                        },
+                        {
+                            "label": "Right-Leaning",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-alignment",
+                    "prompt": "Do they likely share your values?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "No",
+                            "value": 0
+                        },
+                        {
+                            "label": "Yes",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-intention",
+                    "prompt": "Is their intent more likely to persuade or inform?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Persuade",
+                            "value": 0
+                        },
+                        {
+                            "label": "Inform",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-trust",
+                    "prompt": "How trustworthy are they?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Untrustworthy",
+                            "value": 0
+                        },
+                        {
+                            "label": "Trustworthy",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-beauty",
+                    "prompt": "How aesthetically pleasing is this image?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not at all",
+                            "value": 0
+                        },
+                        {
+                            "label": "Very much",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-obscured-explain",
+                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
+                    "location": "sidebar",
+                    "type": "checkbox",
+                    "options": [
+                        "Click here once finished responding"
+                    ]
+                }
+            ]
+        },
+        "B1C-unobscured": {
+            "type": "image",
+            "description": "Unobscured B1-C stimulus",
+            "path": "Mic-User-Study/assets/B1C-unobscured.png",
+            "instruction": "Please answer the following questions about the maker of this chart",
+            "style": {
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
+            },
+            "response": [
+                {
+                    "id": "mic-user-study/b1c-unobscured-encounter",
+                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Scroll",
+                        "Read"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-id",
+                    "prompt": "Who do you think is most likely responsible for having this image created?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Individual",
+                        "Organization",
+                        "Education",
+                        "Business",
+                        "News",
+                        "Political"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-id-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-age",
+                    "prompt": "What generation are they most likely from?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Boomer",
+                        "Gen-X",
+                        "Millenial",
+                        "Gen-Z"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-age-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-gender",
+                    "prompt": "What gender do they most likely identify with?",
+                    "location": "sidebar",
+                    "type": "radio",
+                    "options": [
+                        "Male",
+                        "Female",
+                        "Other"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-gender-conf",
+                    "prompt": "How confident are you with your answer for the above question?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not Confident",
+                            "value": 0
+                        },
+                        {
+                            "label": "Confident",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-design",
+                    "prompt": "Are they likely a layperson or professional in graphic design?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-data",
+                    "prompt": "Are they likely a layperson or professional in data analysis?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Layperson",
+                            "value": 0
+                        },
+                        {
+                            "label": "Professional",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-politics",
+                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Left-Leaning",
+                            "value": 0
+                        },
+                        {
+                            "label": "Right-Leaning",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-alignment",
+                    "prompt": "Do they likely share your values?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "No",
+                            "value": 0
+                        },
+                        {
+                            "label": "Yes",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-intention",
+                    "prompt": "Is their intent more likely to persuade or inform?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Persuade",
+                            "value": 0
+                        },
+                        {
+                            "label": "Inform",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-trust",
+                    "prompt": "How trustworthy are they?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Untrustworthy",
+                            "value": 0
+                        },
+                        {
+                            "label": "Trustworthy",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-beauty",
+                    "prompt": "How aesthetically pleasing is this image?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not at all",
+                            "value": 0
+                        },
+                        {
+                            "label": "Very much",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1c-unobscured-explain",
+                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
+                    "location": "sidebar",
+                    "type": "checkbox",
+                    "options": [
+                        "Click here once finished responding"
+                    ]
+                }
+            ]
+        },
+        "Feedback": {
+            "type": "questionnaire",
+            "response": [
+                {
+                    "id": "mic-user-study/feedback-usefulness",
+                    "prompt": "How useful did you find the ability to record audio explanations alongside your survey answers?",
+                    "type": "likert",
+                    "leftLabel": "Not Useful",
+                    "rightLabel": "Very Useful",
+                    "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/feedback-situations",
+                    "prompt": "In what situations do you think this feature would be most useful?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-confusion",
+                    "prompt": "Did you encounter any confusion while using the feature? If so, what caused it?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-which-questions",
+                    "prompt": "If you didn’t use the audio feature for certain questions, what stopped you?",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-quality",
+                    "prompt": "How would you rate the audio recording quality?",
+                    "type": "likert",
+                    "leftLabel": "Low Quality",
+                    "rightLabel": "High Quality",
+                    "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/feedback-suggestions",
+                    "prompt": "What improvements would you suggest for the audio recording experience? Include any additional features you believe would be useful.",
+                    "type": "longText"
+                },
+                {
+                    "id": "mic-user-study/feedback-likeliness",
+                    "prompt": "How likely would you be to use this audio feature in a real survey?",
+                    "type": "likert",
+                    "leftLabel": "Not Likely At All",
+                    "rightLabel": "Very Likely",
+                    "numItems": 5
+                },
+                {
+                    "id": "mic-user-study/prolific-redirect",
+                    "prompt": "Please Submit before using this code in Prolific: C18Q8NZZ",
+                    "type":"checkbox",
+                    "options":[
+                        "Understood"
+                    ]
+                }
+            ]
+        }
+    },
+    "sequence": {
+        "order": "fixed",
+        "components": [
+            "Introduction",
+            "B0-obscured",
+            "B0-unobscured",
+            "B1C-obscured",
+            "B1C-unobscured",
+            "Feedback"
+        ]
+    }
+}
