@@ -1,5 +1,5 @@
 import {
-  Box, Button,
+  Box, Button, Flex, Text,
 } from '@mantine/core';
 
 import React, {
@@ -28,6 +28,25 @@ import { useStorageEngine } from '../../storage/storageEngineHooks';
 import { useStudyConfig } from '../../store/hooks/useStudyConfig';
 import { useStoredAnswer } from '../../store/hooks/useStoredAnswer';
 import { responseAnswerIsCorrect } from '../../utils/correctAnswer';
+import { RecordingAudioWaveform } from '../interface/RecordingAudioWaveform';
+
+// Styles for recording animation
+const recordingStyles = `
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.8; }
+}
+
+.recording-active {
+  animation: pulse 1.5s ease-in-out infinite;
+  box-shadow: 0 0 0 4px rgba(250, 82, 82, 0.3);
+  border-radius: 50%;
+}
+
+.responseBlock .mantine-Slider-root {
+  padding: 0 8px;
+}
+`;
 
 type Props = {
   status?: StoredAnswer;
@@ -44,6 +63,13 @@ function findMatchingStrings(arr1: string[], arr2: string[]): string[] {
     }
   }
   return matches;
+}
+
+// Helper function to format recording duration
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${String(secs).padStart(2, '0')}`;
 }
 
 export function ResponseBlock({
@@ -66,6 +92,7 @@ export function ResponseBlock({
   const formOrders: Record<string, string[]> = useMemo(() => storedAnswerData?.formOrder || {}, [storedAnswerData]);
 
   const audioStream = useRef<MediaRecorder | null>(null);
+  const recordingIntervalRef = useRef<Record<string, NodeJS.Timeout | null>>({});
 
   const navigate = useNavigate();
 
@@ -144,6 +171,7 @@ export function ResponseBlock({
   const identifier = useCurrentIdentifier();
 
   const [recordingStates, setRecordingStates] = useState<Record<string, boolean>>({});
+  const [recordingDurations, setRecordingDurations] = useState<Record<string, number>>({});
 
   const [audioUrls, setAudioUrls] = useState<Record<string, string | null>>({});
 
@@ -354,6 +382,12 @@ export function ResponseBlock({
   const toggleRecording = useCallback(async (responseId: string): Promise<void> => {
     // If already recording for this response -> stop
     if (recordingStates[responseId] && audioStream.current) {
+      // Clear the duration interval
+      if (recordingIntervalRef.current[responseId]) {
+        clearInterval(recordingIntervalRef.current[responseId]!);
+        recordingIntervalRef.current[responseId] = null;
+      }
+
       try {
         audioStream.current.stop();
       } catch {
@@ -389,9 +423,24 @@ export function ResponseBlock({
       mediaRecorder.addEventListener('start', () => {
         chunks = [];
         setRecordingStates((prevStates) => ({ ...prevStates, [responseId]: true }));
+        setRecordingDurations((prev) => ({ ...prev, [responseId]: 0 }));
+
+        // Start duration counter
+        recordingIntervalRef.current[responseId] = setInterval(() => {
+          setRecordingDurations((prev) => ({
+            ...prev,
+            [responseId]: (prev[responseId] || 0) + 1,
+          }));
+        }, 1000);
       });
 
       mediaRecorder.addEventListener('stop', async () => {
+        // Clear the duration interval
+        if (recordingIntervalRef.current[responseId]) {
+          clearInterval(recordingIntervalRef.current[responseId]!);
+          recordingIntervalRef.current[responseId] = null;
+        }
+
         const blob = new Blob(chunks, { type: mediaRecorder.mimeType || 'audio/webm' });
         const taskName = `${identifier}_${responseId}`;
 
@@ -427,11 +476,21 @@ export function ResponseBlock({
     }
   }, [identifier, recordingStates, storageEngine, participantId]);
 
+  // Cleanup intervals on unmount
+  useEffect(() => () => {
+    Object.values(recordingIntervalRef.current).forEach((interval) => {
+      if (interval) clearInterval(interval);
+    });
+  }, []);
+
   const nextButtonText = useMemo(() => config?.nextButtonText ?? studyConfig.uiConfig.nextButtonText ?? 'Next', [config, studyConfig]);
 
   let index = 0;
   return (
     <>
+      {/* Inject styles for recording animation and slider fix */}
+      <style>{recordingStyles}</style>
+
       <Box className={`responseBlock responseBlock-${location}`} style={style}>
         {allResponsesWithDefaults.map((response) => {
           const configCorrectAnswer = config.correctAnswer?.find((answer) => answer.id === response.id)?.answer;
@@ -471,24 +530,77 @@ export function ResponseBlock({
                       config={config}
                       disabled={disabledAttempts}
                     />
-                    {response.withMicrophone && (
-                      <>
-                        <img
-                          src={
-                            recordingStates[response.id]
-                              ? `${PREFIX}mic_images/stop_icon.png`
-                              : `${PREFIX}mic_images/mic_icon.png`
-                          }
-                          alt={recordingStates[response.id] ? 'Stop recording' : 'Start recording'}
-                          style={{ maxWidth: '45px', cursor: 'pointer' }}
-                          onClick={() => toggleRecording(response.id)}
-                        />
 
+                    {/* Microphone recording UI - positioned AFTER the question/input */}
+                    {response.withMicrophone && (
+                      <Box
+                        style={{
+                          marginTop: 12,
+                          marginBottom: 16,
+                          width: '100%',
+                          overflow: 'visible',
+                        }}
+                      >
+                        <Flex align="center" gap="sm" wrap="wrap">
+                          {/* Mic button with recording animation */}
+                          <img
+                            src={
+                              recordingStates[response.id]
+                                ? `${PREFIX}mic_images/stop_icon.png`
+                                : `${PREFIX}mic_images/mic_icon.png`
+                            }
+                            alt={recordingStates[response.id] ? 'Stop recording' : 'Start recording'}
+                            className={recordingStates[response.id] ? 'recording-active' : ''}
+                            style={{
+                              width: 45,
+                              height: 45,
+                              cursor: 'pointer',
+                              display: 'block',
+                              flexShrink: 0,
+                            }}
+                            onClick={() => toggleRecording(response.id)}
+                          />
+
+                          {/* Live waveform visualization when recording */}
+                          {recordingStates[response.id] && (
+                            <RecordingAudioWaveform
+                              width={100}
+                              height={40}
+                              barColor="#FA5252"
+                              barWidth={2}
+                            />
+                          )}
+
+                          {/* Recording duration timer */}
+                          {recordingStates[response.id] && (
+                            <Text
+                              size="sm"
+                              c="red"
+                              fw={500}
+                              style={{ minWidth: 40, fontVariantNumeric: 'tabular-nums' }}
+                            >
+                              {formatDuration(recordingDurations[response.id] || 0)}
+                            </Text>
+                          )}
+                        </Flex>
+
+                        {/* Audio playback - constrained width for sidebar compatibility */}
                         {audioUrls[response.id] && (
-                          <audio controls src={audioUrls[response.id] as string} style={{ display: 'block', marginTop: 8 }} />
+                          <audio
+                            controls
+                            src={audioUrls[response.id] as string}
+                            style={{
+                              display: 'block',
+                              marginTop: 10,
+                              width: '100%',
+                              minWidth: 150,
+                              maxWidth: 300,
+                            }}
+                          />
                         )}
-                      </>
+                      </Box>
                     )}
+
                     <FeedbackAlert
                       response={response}
                       correctAnswer={correctAnswer}
