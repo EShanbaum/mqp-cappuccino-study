@@ -97,7 +97,7 @@ async function fetchBlobFromUrl(url: string | null | undefined): Promise<Blob | 
   return await res.blob();
 }
 
-export async function getTaskAudioBlob({
+export async function getTaskAudioUrl({
   storageEngine,
   participantId,
   identifier,
@@ -107,11 +107,11 @@ export async function getTaskAudioBlob({
   participantId: string;
   identifier: string;
   audioUrl?: string | null;
-}): Promise<Blob | null> {
+}): Promise<string | null> {
   // Prefer explicitly passed URL, otherwise ask the storage engine
   const finalAudioUrl = audioUrl || await storageEngine.getAudioUrl(identifier, participantId);
 
-  return fetchBlobFromUrl(finalAudioUrl);
+  return finalAudioUrl;
 }
 
 export async function getTaskTranscriptBlob({
