@@ -58,41 +58,8 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b0-obscured-id",
-                    "prompt": "Who do you think is most likely responsible for having this image created?",
-                    "location": "sidebar",
-                    "type": "dropdown",
-                    "options": [
-                        "Individual",
-                        "Organization",
-                        "Education",
-                        "Business",
-                        "News",
-                        "Political"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-id-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b0-obscured-age",
-                    "prompt": "What generation are they most likely from?",
+                    "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
                     "options": [
@@ -146,42 +113,6 @@
                         },
                         {
                             "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-design",
-                    "prompt": "Are they likely a layperson or professional in graphic design?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-data",
-                    "prompt": "Are they likely a layperson or professional in data analysis?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
                             "value": 100
                         }
                     ],
@@ -284,7 +215,8 @@
                     "type": "checkbox",
                     "options": [
                         "Click here once finished responding"
-                    ]
+                    ],
+                    "withMicrophone": true
                 }
             ]
         },
@@ -311,41 +243,8 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b0-unobscured-id",
-                    "prompt": "Who do you think is most likely responsible for having this image created?",
-                    "location": "sidebar",
-                    "type": "dropdown",
-                    "options": [
-                        "Individual",
-                        "Organization",
-                        "Education",
-                        "Business",
-                        "News",
-                        "Political"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-id-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b0-unobscured-age",
-                    "prompt": "What generation are they most likely from?",
+                    "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
                     "options": [
@@ -399,42 +298,6 @@
                         },
                         {
                             "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-design",
-                    "prompt": "Are they likely a layperson or professional in graphic design?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-data",
-                    "prompt": "Are they likely a layperson or professional in data analysis?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
                             "value": 100
                         }
                     ],
@@ -537,7 +400,8 @@
                     "type": "checkbox",
                     "options": [
                         "Click here once finished responding"
-                    ]
+                    ],
+                    "withMicrophone": true
                 }
             ]
         },
@@ -564,41 +428,8 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-id",
-                    "prompt": "Who do you think is most likely responsible for having this image created?",
-                    "location": "sidebar",
-                    "type": "dropdown",
-                    "options": [
-                        "Individual",
-                        "Organization",
-                        "Education",
-                        "Business",
-                        "News",
-                        "Political"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-obscured-id-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b1c-obscured-age",
-                    "prompt": "What generation are they most likely from?",
+                    "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
                     "options": [
@@ -652,42 +483,6 @@
                         },
                         {
                             "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-obscured-design",
-                    "prompt": "Are they likely a layperson or professional in graphic design?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-obscured-data",
-                    "prompt": "Are they likely a layperson or professional in data analysis?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
                             "value": 100
                         }
                     ],
@@ -790,7 +585,8 @@
                     "type": "checkbox",
                     "options": [
                         "Click here once finished responding"
-                    ]
+                    ],
+                    "withMicrophone": true
                 }
             ]
         },
@@ -817,41 +613,8 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-id",
-                    "prompt": "Who do you think is most likely responsible for having this image created?",
-                    "location": "sidebar",
-                    "type": "dropdown",
-                    "options": [
-                        "Individual",
-                        "Organization",
-                        "Education",
-                        "Business",
-                        "News",
-                        "Political"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-unobscured-id-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b1c-unobscured-age",
-                    "prompt": "What generation are they most likely from?",
+                    "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
                     "options": [
@@ -905,42 +668,6 @@
                         },
                         {
                             "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-unobscured-design",
-                    "prompt": "Are they likely a layperson or professional in graphic design?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-unobscured-data",
-                    "prompt": "Are they likely a layperson or professional in data analysis?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Layperson",
-                            "value": 0
-                        },
-                        {
-                            "label": "Professional",
                             "value": 100
                         }
                     ],
@@ -1043,7 +770,8 @@
                     "type": "checkbox",
                     "options": [
                         "Click here once finished responding"
-                    ]
+                    ],
+                    "withMicrophone": true
                 }
             ]
         },
