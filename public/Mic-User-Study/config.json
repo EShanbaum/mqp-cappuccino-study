@@ -71,24 +71,6 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b0-obscured-age-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b0-obscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
@@ -97,24 +79,6 @@
                         "Male",
                         "Female",
                         "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-gender-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
                     ],
                     "withMicrophone": true
                 },
@@ -256,24 +220,6 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b0-unobscured-age-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b0-unobscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
@@ -282,24 +228,6 @@
                         "Male",
                         "Female",
                         "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-gender-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
                     ],
                     "withMicrophone": true
                 },
@@ -441,24 +369,6 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-age-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b1c-obscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
@@ -467,24 +377,6 @@
                         "Male",
                         "Female",
                         "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-obscured-gender-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
                     ],
                     "withMicrophone": true
                 },
@@ -626,24 +518,6 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-age-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b1c-unobscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
@@ -652,24 +526,6 @@
                         "Male",
                         "Female",
                         "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b1c-unobscured-gender-conf",
-                    "prompt": "How confident are you with your answer for the above question?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not Confident",
-                            "value": 0
-                        },
-                        {
-                            "label": "Confident",
-                            "value": 100
-                        }
                     ],
                     "withMicrophone": true
                 },
