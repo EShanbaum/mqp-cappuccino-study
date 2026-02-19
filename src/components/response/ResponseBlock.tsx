@@ -483,6 +483,15 @@ export function ResponseBlock({
     });
   }, []);
 
+  // Correctly stops the timer when stop is pressed
+  const stopDurationTimer = (responseId: string) => {
+    const handle = recordingIntervalRef.current[responseId];
+    if (handle) {
+      clearInterval(handle);
+      recordingIntervalRef.current[responseId] = null;
+    }
+  };
+
   const nextButtonText = useMemo(() => config?.nextButtonText ?? studyConfig.uiConfig.nextButtonText ?? 'Next', [config, studyConfig]);
 
   let index = 0;
@@ -535,10 +544,9 @@ export function ResponseBlock({
                     {response.withMicrophone && (
                       <Box
                         style={{
-                          marginTop: 24,
-                          marginBottom: 20,
-                          paddingTop: 16,
-                          paddingBottom: 12,
+                          marginTop: 12,
+                          marginBottom: 30,
+                          paddingBottom: 18,
                           width: '100%',
                           overflow: 'visible',
                           borderTop: audioUrls[response.id] ? '1px solid #e0e0e0' : 'none',
@@ -562,7 +570,7 @@ export function ResponseBlock({
                               display: 'block',
                               flexShrink: 0,
                             }}
-                            onClick={() => toggleRecording(response.id)}
+                            onClick={() => { toggleRecording(response.id); stopDurationTimer(response.id); }}
                           />
 
                           {/* Live waveform visualization when recording */}
