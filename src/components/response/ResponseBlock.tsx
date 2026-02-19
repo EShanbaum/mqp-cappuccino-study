@@ -535,13 +535,17 @@ export function ResponseBlock({
                     {response.withMicrophone && (
                       <Box
                         style={{
-                          marginTop: 12,
-                          marginBottom: 16,
+                          marginTop: 24,
+                          marginBottom: 20,
+                          paddingTop: 16,
+                          paddingBottom: 12,
                           width: '100%',
                           overflow: 'visible',
+                          borderTop: audioUrls[response.id] ? '1px solid #e0e0e0' : 'none',
                         }}
                       >
-                        <Flex align="center" gap="sm" wrap="wrap">
+                        {/* Recording controls section */}
+                        <Flex align="center" gap="sm" wrap="wrap" style={{ marginBottom: audioUrls[response.id] ? 12 : 0 }}>
                           {/* Mic button with recording animation */}
                           <img
                             src={
@@ -571,11 +575,11 @@ export function ResponseBlock({
                             />
                           )}
 
-                          {/* Recording duration timer */}
-                          {recordingStates[response.id] && (
+                          {/* Recording duration timer - shown during and after recording */}
+                          {(recordingStates[response.id] || audioUrls[response.id]) && (
                             <Text
                               size="sm"
-                              c="red"
+                              c={recordingStates[response.id] ? 'red' : 'dimmed'}
                               fw={500}
                               style={{ minWidth: 40, fontVariantNumeric: 'tabular-nums' }}
                             >
@@ -584,19 +588,32 @@ export function ResponseBlock({
                           )}
                         </Flex>
 
-                        {/* Audio playback - constrained width for sidebar compatibility */}
+                        {/* Audio playback and controls - constrained width for sidebar compatibility */}
                         {audioUrls[response.id] && (
-                          <audio
-                            controls
-                            src={audioUrls[response.id] as string}
-                            style={{
-                              display: 'block',
-                              marginTop: 10,
-                              width: '100%',
-                              minWidth: 150,
-                              maxWidth: 300,
-                            }}
-                          />
+                          <Flex direction="column" gap="sm">
+                            <audio
+                              controls
+                              src={audioUrls[response.id] as string}
+                              style={{
+                                display: 'block',
+                                width: '100%',
+                                minWidth: 150,
+                                maxWidth: 300,
+                              }}
+                            />
+                            {/* Re-record button to clear and restart */}
+                            <Button
+                              variant="light"
+                              size="xs"
+                              onClick={() => {
+                                setAudioUrls((prev) => ({ ...prev, [response.id]: null }));
+                                setRecordingDurations((prev) => ({ ...prev, [response.id]: 0 }));
+                              }}
+                              style={{ width: 'fit-content' }}
+                            >
+                              Re-record
+                            </Button>
+                          </Flex>
                         )}
                       </Box>
                     )}
