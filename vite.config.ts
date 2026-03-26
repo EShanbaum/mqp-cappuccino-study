@@ -105,8 +105,12 @@ export default defineConfig(({ command, mode }) => {
         try {
           const raw = await readBody(req);
           const body = JSON.parse(raw) as {
-            question?: string;
+            trialKey?: string;
             clipName?: string;
+            responseId?: string;
+            questionPrompt?: string;
+            componentId?: string;
+            componentPrompt?: string;
             clips?: Array<{ participantId: string; url: string }>;
           };
 
@@ -283,7 +287,11 @@ export default defineConfig(({ command, mode }) => {
           const prompt = [
             'Summarize the participants responses for this question.',
             'Return a concise paragraph and 3-6 bullet points of themes.',
-            body.question ? `Question: ${body.question}` : null,
+            body.questionPrompt ? `Question: ${body.questionPrompt}` : null,
+            body.componentPrompt ? `Study instruction: ${body.componentPrompt}` : null,
+            body.componentId ? `Component: ${body.componentId}` : null,
+            body.responseId ? `Response id: ${body.responseId}` : null,
+            body.trialKey ? `Trial key: ${body.trialKey}` : null,
             body.clipName ? `Clip group: ${body.clipName}` : null,
             '',
             'Transcripts:',
