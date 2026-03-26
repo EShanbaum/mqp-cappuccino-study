@@ -10,13 +10,27 @@ import {
 } from '@mantine/core';
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router';
+import { StudyConfig } from '../../../parser/types';
 import { useStorageEngine } from '../../../storage/storageEngineHooks';
 import { ParticipantData } from '../../../storage/types';
+import { studyComponentToIndividualComponent } from '../../../utils/handleComponentInheritance';
 
 type ParticipantClips = {
   participantId: string;
   clips: Array<{ name: string; url: string }>;
 };
+
+type ClipQuestionContext = {
+  clipName: string;
+  responseId: string;
+  componentId: string;
+  componentPrompt: string;
+  questionPrompt: string;
+};
+
+function normalizeJoinKey(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
 
 async function mapLimit<T, R>(
   items: T[],
@@ -42,7 +56,7 @@ async function mapLimit<T, R>(
   return results;
 }
 
-export function QuestionMicAudioPage() {
+export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfig }) {
   const { studyId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { storageEngine } = useStorageEngine();
@@ -66,6 +80,71 @@ export function QuestionMicAudioPage() {
   const [summaryByClip, setSummaryByClip] = useState<Record<string, string>>({});
   const [summaryStatusByClip, setSummaryStatusByClip] = useState<Record<string, { loading: boolean; error?: string }>>({});
 
+  const clipQuestionContextByName = useMemo(() => {
+    const contextByName = new Map<string, ClipQuestionContext>();
+    const contextByNormalizedName = new Map<string, ClipQuestionContext>();
+
+    if (!studyConfig) {
+      return {
+        exact: contextByName,
+        normalized: contextByNormalizedName,
+      };
+    }
+
+    Object.entries(studyConfig.components).forEach(([componentId, componentConfig]) => {
+      const component = studyComponentToIndividualComponent(componentConfig, studyConfig);
+      const responses = 'response' in component && Array.isArray(component.response) ? component.response : [];
+      const componentPrompt = 'instruction' in component && typeof component.instruction === 'string'
+        ? component.instruction
+        : '';
+
+      responses.forEach((response) => {
+        const clipName = response.id.split('/').pop() || response.id;
+        const context: ClipQuestionContext = {
+          clipName,
+          responseId: response.id,
+          componentId,
+          componentPrompt,
+          questionPrompt: response.prompt,
+        };
+
+        contextByName.set(clipName, context);
+        contextByNormalizedName.set(normalizeJoinKey(clipName), context);
+        contextByNormalizedName.set(normalizeJoinKey(response.id), context);
+      });
+    });
+
+    return {
+      exact: contextByName,
+      normalized: contextByNormalizedName,
+    };
+  }, [studyConfig]);
+
+  const selectedTrialContext = useMemo(() => {
+    if (!selectedQuestion || !participants.length) {
+      return null;
+    }
+
+    const sampleAnswer = participants
+      .map((participant) => participant.answers?.[selectedQuestion])
+      .find(Boolean);
+
+    const componentId = sampleAnswer?.componentName || selectedQuestion.split('_').slice(0, -1).join('_') || selectedQuestion;
+    if (!studyConfig?.components[componentId]) {
+      return null;
+    }
+
+    const component = studyComponentToIndividualComponent(studyConfig.components[componentId], studyConfig);
+    const componentPrompt = 'instruction' in component && typeof component.instruction === 'string'
+      ? component.instruction
+      : '';
+
+    return {
+      componentId,
+      componentPrompt,
+    };
+  }, [participants, selectedQuestion, studyConfig]);
+
   const groupedByClipName = useMemo(() => {
     const map = new Map<string, Array<{ participantId: string; url: string }>>();
     clipsByParticipant.forEach((row) => {
@@ -79,12 +158,19 @@ export function QuestionMicAudioPage() {
     return Array.from(map.entries())
       .map(([clipName, entries]) => ({
         clipName,
+        clipContext: clipQuestionContextByName.exact.get(clipName)
+          || clipQuestionContextByName.normalized.get(normalizeJoinKey(clipName))
+          || null,
         entries: entries.sort((a, b) => a.participantId.localeCompare(b.participantId)),
       }))
       .sort((a, b) => a.clipName.localeCompare(b.clipName));
-  }, [clipsByParticipant]);
+  }, [clipQuestionContextByName, clipsByParticipant]);
 
   const summarizeGroup = async (group: { clipName: string; entries: Array<{ participantId: string; url: string }> }) => {
+    const clipContext = clipQuestionContextByName.exact.get(group.clipName)
+      || clipQuestionContextByName.normalized.get(normalizeJoinKey(group.clipName))
+      || null;
+
     setSummaryStatusByClip((prev) => ({
       ...prev,
       [group.clipName]: { loading: true },
@@ -95,8 +181,12 @@ export function QuestionMicAudioPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          question: selectedQuestion,
+          trialKey: selectedQuestion,
           clipName: group.clipName,
+          responseId: clipContext?.responseId,
+          questionPrompt: clipContext?.questionPrompt,
+          componentId: clipContext?.componentId ?? selectedTrialContext?.componentId,
+          componentPrompt: clipContext?.componentPrompt ?? selectedTrialContext?.componentPrompt,
           clips: group.entries,
         }),
       });
@@ -175,8 +265,6 @@ export function QuestionMicAudioPage() {
     return () => { cancelled = true; };
   }, [participants, selectedQuestion, storageEngine]);
 
-  const isFirebase = storageEngine?.getEngine() === 'firebase';
-
   return (
     <Box style={{ position: 'relative' }}>
       <LoadingOverlay visible={loadingParticipants || loadingClips} />
@@ -185,13 +273,8 @@ export function QuestionMicAudioPage() {
           <Box>
             <Title order={4}>Question mic audio (all participants)</Title>
             <Text size="sm" c="dimmed">
-              Select a question (trial key) to load all mic-user-study clips across participants.
+              Select a trial key to load all mic-user-study clips across participants, then summarize each recorded response with its matching study question.
             </Text>
-            {!isFirebase && (
-              <Text size="sm" c="red">
-                This page currently requires Firebase storage.
-              </Text>
-            )}
           </Box>
 
           <Select
@@ -213,20 +296,30 @@ export function QuestionMicAudioPage() {
         </Group>
 
         {selectedQuestion && (
-          <Text size="sm">
-            Showing
-            {' '}
-            <Text span fw={600}>{groupedByClipName.length}</Text>
-            {' '}
-            clip groups across
-            {' '}
-            <Text span fw={600}>{clipsByParticipant.length}</Text>
-            {' '}
-            participants for
-            {' '}
-            <Text span fw={600} ff="monospace">{selectedQuestion}</Text>
-            .
-          </Text>
+          <Stack gap={4}>
+            <Text size="sm">
+              Showing
+              {' '}
+              <Text span fw={600}>{groupedByClipName.length}</Text>
+              {' '}
+              clip groups across
+              {' '}
+              <Text span fw={600}>{clipsByParticipant.length}</Text>
+              {' '}
+              participants for
+              {' '}
+              <Text span fw={600} ff="monospace">{selectedQuestion}</Text>
+              .
+            </Text>
+            {selectedTrialContext?.componentId && (
+              <Text size="sm" c="dimmed">
+                Component:
+                {' '}
+                <Text span ff="monospace">{selectedTrialContext.componentId}</Text>
+                {selectedTrialContext.componentPrompt ? ` • ${selectedTrialContext.componentPrompt}` : ''}
+              </Text>
+            )}
+          </Stack>
         )}
 
         <Stack gap="lg">
@@ -251,6 +344,12 @@ export function QuestionMicAudioPage() {
                   </Button>
                 </Group>
               </Group>
+
+              {group.clipContext?.questionPrompt && (
+                <Text size="sm" mt={4}>
+                  {group.clipContext.questionPrompt}
+                </Text>
+              )}
 
               <Stack gap="xs" mt="xs">
                 {group.entries.map((entry) => (
