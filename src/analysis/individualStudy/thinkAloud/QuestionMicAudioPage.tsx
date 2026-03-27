@@ -11,6 +11,7 @@ import {
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router';
 import { StudyConfig } from '../../../parser/types';
+import { ReactMarkdownWrapper } from '../../../components/ReactMarkdownWrapper';
 import { useStorageEngine } from '../../../storage/storageEngineHooks';
 import { ParticipantData } from '../../../storage/types';
 import { studyComponentToIndividualComponent } from '../../../utils/handleComponentInheritance';
@@ -20,16 +21,110 @@ type ParticipantClips = {
   clips: Array<{ name: string; url: string }>;
 };
 
+type SummaryClipEntry = {
+  participantId: string;
+  url: string;
+  selectedChoice?: string;
+};
+
 type ClipQuestionContext = {
   clipName: string;
   responseId: string;
   componentId: string;
   componentPrompt: string;
   questionPrompt: string;
+  questionType: string;
+  condition: 'Obscured' | 'Unobscured' | 'Unknown';
+  answerOptions?: string[];
+  answerFormatDescription: string;
 };
 
 function normalizeJoinKey(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+
+function formatSelectedChoice(value: string | number | boolean | string[] | undefined) {
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+  if (typeof value === 'boolean') {
+    return value ? 'true' : 'false';
+  }
+  if (value === undefined) {
+    return undefined;
+  }
+  return String(value);
+}
+
+function getConditionLabel(value: string) {
+  const normalized = value.toLowerCase();
+  if (normalized.includes('unobscured')) return 'Unobscured';
+  if (normalized.includes('obscured')) return 'Obscured';
+  return 'Unknown';
+}
+
+function formatStringOptions(options: Array<string | { label: string; value: string }>) {
+  return options.map((option) => (typeof option === 'string' ? option : `${option.label} (${option.value})`));
+}
+
+function getQuestionMetadata(response: {
+  type: string;
+  options?: Array<string | { label: string; value: string } | { label: string; value: number }>;
+  minSelections?: number;
+  maxSelections?: number;
+  leftLabel?: string;
+  rightLabel?: string;
+  numItems?: number;
+  start?: number;
+  spacing?: number;
+  answerOptions?: string[] | string;
+  questionOptions?: string[];
+}) {
+  switch (response.type) {
+    case 'radio':
+    case 'dropdown':
+    case 'checkbox':
+    case 'buttons': {
+      const options = formatStringOptions((response.options || []) as Array<string | { label: string; value: string }>);
+      const selectionRule = response.type === 'checkbox'
+        ? `Select one or more options${response.minSelections ? `, minimum ${response.minSelections}` : ''}${response.maxSelections ? `, maximum ${response.maxSelections}` : ''}.`
+        : 'Select exactly one option.';
+      return {
+        answerOptions: options,
+        answerFormatDescription: `${selectionRule} Available options: ${options.join(', ')}.`,
+      };
+    }
+    case 'slider': {
+      const sliderOptions = ((response.options || []) as Array<{ label: string; value: number }>)
+        .map((option) => `${option.label} (${option.value})`);
+      return {
+        answerOptions: sliderOptions,
+        answerFormatDescription: `Answer on a slider scale${sliderOptions.length ? ` with anchors ${sliderOptions.join(', ')}` : ''}.`,
+      };
+    }
+    case 'likert': {
+      const start = response.start ?? 1;
+      const spacing = response.spacing ?? 1;
+      const end = start + ((response.numItems || 1) - 1) * spacing;
+      return {
+        answerOptions: undefined,
+        answerFormatDescription: `Answer on a Likert scale from ${start} to ${end}${response.leftLabel ? `, left label "${response.leftLabel}"` : ''}${response.rightLabel ? `, right label "${response.rightLabel}"` : ''}.`,
+      };
+    }
+    case 'numerical':
+      return { answerOptions: undefined, answerFormatDescription: 'Answer by entering a numeric value.' };
+    case 'shortText':
+    case 'longText':
+      return { answerOptions: undefined, answerFormatDescription: 'Answer by entering free text.' };
+    case 'matrix-radio':
+    case 'matrix-checkbox':
+      return {
+        answerOptions: Array.isArray(response.answerOptions) ? response.answerOptions : undefined,
+        answerFormatDescription: `Answer in a matrix format across prompts${response.questionOptions?.length ? `: ${response.questionOptions.join(', ')}` : ''}${Array.isArray(response.answerOptions) ? `. Available answer columns: ${response.answerOptions.join(', ')}` : '.'}`,
+      };
+    default:
+      return { answerOptions: undefined, answerFormatDescription: `Answer using a ${response.type} input.` };
+  }
 }
 
 async function mapLimit<T, R>(
@@ -100,12 +195,17 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
 
       responses.forEach((response) => {
         const clipName = response.id.split('/').pop() || response.id;
+        const questionMetadata = getQuestionMetadata(response as Parameters<typeof getQuestionMetadata>[0]);
         const context: ClipQuestionContext = {
           clipName,
           responseId: response.id,
           componentId,
           componentPrompt,
           questionPrompt: response.prompt,
+          questionType: response.type,
+          condition: getConditionLabel(clipName || componentId),
+          answerOptions: questionMetadata.answerOptions,
+          answerFormatDescription: questionMetadata.answerFormatDescription,
         };
 
         contextByName.set(clipName, context);
@@ -170,6 +270,19 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
     const clipContext = clipQuestionContextByName.exact.get(group.clipName)
       || clipQuestionContextByName.normalized.get(normalizeJoinKey(group.clipName))
       || null;
+    const clips: SummaryClipEntry[] = group.entries.map((entry) => {
+      const participant = participants.find((p) => p.participantId === entry.participantId);
+      const trialAnswer = participant?.answers?.[selectedQuestion];
+      const selectedChoice = clipContext?.responseId
+        ? formatSelectedChoice(trialAnswer?.answer?.[clipContext.responseId])
+        : undefined;
+
+      return {
+        participantId: entry.participantId,
+        url: entry.url,
+        selectedChoice,
+      };
+    });
 
     setSummaryStatusByClip((prev) => ({
       ...prev,
@@ -187,7 +300,11 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
           questionPrompt: clipContext?.questionPrompt,
           componentId: clipContext?.componentId ?? selectedTrialContext?.componentId,
           componentPrompt: clipContext?.componentPrompt ?? selectedTrialContext?.componentPrompt,
-          clips: group.entries,
+          questionType: clipContext?.questionType,
+          condition: clipContext?.condition,
+          answerOptions: clipContext?.answerOptions,
+          answerFormatDescription: clipContext?.answerFormatDescription,
+          clips,
         }),
       });
 
@@ -369,11 +486,20 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
               )}
 
               {summaryByClip[group.clipName] && (
-                <Box mt="xs" p="xs" style={{ background: 'var(--mantine-color-white)', borderRadius: 6, border: '1px solid var(--mantine-color-gray-3)' }}>
+                <Box
+                  mt="xs"
+                  p="md"
+                  style={{
+                    background: 'var(--mantine-color-white)',
+                    borderRadius: 10,
+                    border: '1px solid var(--mantine-color-gray-3)',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.06)',
+                  }}
+                >
                   <Text size="sm" fw={600}>Summary</Text>
-                  <Text size="sm" style={{ whiteSpace: 'pre-wrap' }}>
-                    {summaryByClip[group.clipName]}
-                  </Text>
+                  <Box mt="xs">
+                    <ReactMarkdownWrapper text={summaryByClip[group.clipName]} />
+                  </Box>
                 </Box>
               )}
             </Box>
