@@ -1,4 +1,3 @@
-import { parse as hjsonParse } from 'hjson';
 import { initializeApp } from 'firebase/app';
 import {
   deleteObject,
@@ -55,7 +54,7 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
   constructor(testing: boolean = false) {
     super('firebase', testing);
 
-    const firebaseConfig = hjsonParse(import.meta.env.VITE_FIREBASE_CONFIG);
+    const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
     const firebaseApp = initializeApp(firebaseConfig);
     this.firestore = initializeFirestore(firebaseApp, {});
     this.studyCollection = collection(
