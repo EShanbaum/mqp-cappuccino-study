@@ -1,5 +1,10 @@
+import { execFile } from 'node:child_process';
+import { randomUUID } from 'node:crypto';
+import { promises as fs } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { onRequest } from 'firebase-functions/v2/https';
 import { defineSecret } from 'firebase-functions/params';
+import ffmpegPath from 'ffmpeg-static';
 
 const OPENAI_API_KEY = defineSecret('OPENAI_API_KEY');
 
@@ -18,6 +23,25 @@ type AudioFetchResult = {
   arrayBuffer: ArrayBuffer;
   contentType: string;
 };
+
+function execFileAsync(cmd: string, args: string[]) {
+  return new Promise<void>((resolve, reject) => {
+    execFile(cmd, args, (error) => {
+      if (error) {
+        reject(error);
+        return;
+      }
+      resolve();
+    });
+  });
+}
+
+function sniffMagic(buffer: ArrayBuffer) {
+  const bytes = new Uint8Array(buffer.slice(0, 12));
+  const hex = Array.from(bytes).map((byte) => byte.toString(16).padStart(2, '0')).join(' ');
+  const asText = Array.from(bytes).map((byte) => (byte >= 32 && byte <= 126 ? String.fromCharCode(byte) : '.')).join('');
+  return { hex, asText };
+}
 
 function setCorsHeaders(res: { set: (header: string, value: string) => void }) {
   res.set('Access-Control-Allow-Origin', '*');
@@ -104,6 +128,37 @@ async function fetchFullAudio(url: string): Promise<AudioFetchResult> {
   };
 }
 
+async function maybeConvertWithFfmpeg(inputBuffer: ArrayBuffer, target: 'wav' | 'mp3') {
+  if (!ffmpegPath) {
+    throw new Error('ffmpeg-static binary is unavailable');
+  }
+
+  const inputPath = `${tmpdir()}/mic-${randomUUID()}.bin`;
+  const outputPath = `${tmpdir()}/mic-${randomUUID()}.${target}`;
+
+  try {
+    await fs.writeFile(inputPath, new Uint8Array(inputBuffer));
+    await execFileAsync(ffmpegPath, [
+      '-y',
+      '-loglevel',
+      'error',
+      '-i',
+      inputPath,
+      '-ac',
+      '1',
+      '-ar',
+      '16000',
+      outputPath,
+    ]);
+
+    const outBuffer = await fs.readFile(outputPath);
+    return outBuffer.buffer.slice(outBuffer.byteOffset, outBuffer.byteOffset + outBuffer.byteLength);
+  } finally {
+    await fs.rm(inputPath, { force: true }).catch(() => {});
+    await fs.rm(outputPath, { force: true }).catch(() => {});
+  }
+}
+
 function makeTranscriptionForm(
   model: string,
   responseFormat: 'text' | 'json',
@@ -122,27 +177,23 @@ function makeTranscriptionForm(
   return form;
 }
 
-async function transcribeClip(
+async function transcribeWithModel(
   apiKey: string,
-  clip: ClipRequest,
+  model: string,
+  responseFormat: 'text' | 'json',
+  buffer: ArrayBuffer,
+  contentType: string,
+  ext: string,
 ) {
-  const audio = await fetchFullAudio(clip.url);
-  if (audio.arrayBuffer.byteLength > 25 * 1024 * 1024) {
-    throw new Error(`Audio too large for ${clip.participantId}`);
-  }
-
-  const contentType = audio.contentType || 'application/octet-stream';
-  const ext = extFromType(contentType);
-
   const transcribeResponse = await fetch('https://api.openai.com/v1/audio/transcriptions', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${apiKey}`,
     },
     body: makeTranscriptionForm(
-      'gpt-4o-mini-transcribe',
-      'text',
-      audio.arrayBuffer,
+      model,
+      responseFormat,
+      buffer,
       contentType,
       ext,
     ),
@@ -153,9 +204,75 @@ async function transcribeClip(
     throw new Error(bodyText || `Transcription failed (${transcribeResponse.status})`);
   }
 
+  if (responseFormat === 'json') {
+    const parsed = JSON.parse(bodyText) as { text?: string };
+    return (parsed.text || '').trim();
+  }
+
+  return bodyText.trim();
+}
+
+async function transcribeClip(
+  apiKey: string,
+  clip: ClipRequest,
+) {
+  const audio = await fetchFullAudio(clip.url);
+  const magic = sniffMagic(audio.arrayBuffer);
+  if (audio.arrayBuffer.byteLength > 25 * 1024 * 1024) {
+    throw new Error(`Audio too large for ${clip.participantId}`);
+  }
+
+  const contentType = audio.contentType || 'application/octet-stream';
+  const ext = extFromType(contentType);
+  console.warn('[mic-summary] audio fetch', {
+    participantId: clip.participantId,
+    contentType,
+    size: audio.arrayBuffer.byteLength,
+    magicHex: magic.hex,
+    magicText: magic.asText,
+  });
+
   return {
     participantId: clip.participantId,
-    text: bodyText.trim(),
+    text: await (async () => {
+      try {
+        return await transcribeWithModel(
+          apiKey,
+          'gpt-4o-mini-transcribe',
+          'text',
+          audio.arrayBuffer,
+          contentType,
+          ext,
+        );
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        const shouldFallback = message.includes('unsupported_format')
+          || message.includes('Audio file might be corrupted or unsupported')
+          || message.includes('invalid_value')
+          || message.includes('messages');
+
+        if (!shouldFallback) {
+          throw error;
+        }
+
+        console.warn('[mic-summary] primary transcription failed, retrying with ffmpeg conversion', {
+          participantId: clip.participantId,
+          contentType,
+          ext,
+          error: message,
+        });
+
+        const wavBuffer = await maybeConvertWithFfmpeg(audio.arrayBuffer, 'wav');
+        return transcribeWithModel(
+          apiKey,
+          'whisper-1',
+          'json',
+          wavBuffer,
+          'audio/wav',
+          'wav',
+        );
+      }
+    })(),
   };
 }
 
