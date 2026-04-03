@@ -71,9 +71,6 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     if (storageEngine && isCloudStorageEngine(storageEngine)) {
       try {
         await storageEngine.logout();
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        console.error(`There was an issue signing-out the user: ${error.message}`);
       } finally {
         setUser(nonLoadingNullUser);
       }
@@ -89,12 +86,9 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     const checkSession = async () => {
       if (storageEngine?.getEngine() === 'supabase') {
         try {
-          console.warn('[ReVISit][Auth] Checking existing Supabase session');
           await (storageEngine as SupabaseStorageEngine).getSession();
-          console.warn('[ReVISit][Auth] Supabase session check completed');
-        } catch (err) {
-          // optional: log or handle errors
-          console.error('Supabase session check failed', err);
+        } catch {
+          // Ignore session check failures here; auth flow will resolve downstream.
         }
       }
     };
@@ -110,19 +104,10 @@ export function AuthProvider({ children } : { children: ReactNode }) {
 
   useEffect(() => {
     // Set initialUser
-    console.warn('[ReVISit][Auth] Auth effect starting', {
-      storageEngine: storageEngine?.getEngine?.() ?? null,
-      enableAuthTrigger,
-    });
     setUser(loadingNullUser);
 
     // Handle auth state changes for Firebase
     const handleAuthStateChanged = async (cloudUser: StoredUser | null) => {
-      console.warn('[ReVISit][Auth] Auth state changed', {
-        hasCloudUser: Boolean(cloudUser),
-        email: cloudUser?.email || null,
-        uidPresent: Boolean(cloudUser?.uid),
-      });
       // Reset the user. This also gets called on signOut
       setUser((prevUser) => ({
         user: prevUser.user,
@@ -138,52 +123,30 @@ export function AuthProvider({ children } : { children: ReactNode }) {
           isAdmin: false,
           adminVerification: true,
         };
-        console.warn('[ReVISit][Auth] Validating admin status for signed-in user', {
-          email: cloudUser.email,
-        });
         const isAdmin = await verifyAdminStatus(currUser);
         currUser.isAdmin = !!isAdmin;
-        console.warn('[ReVISit][Auth] Admin validation complete', {
-          email: cloudUser.email,
-          isAdmin: currUser.isAdmin,
-        });
         setUser(currUser);
       } else {
-        console.warn('[ReVISit][Auth] No cloud user present, logging out');
         logout();
       }
     };
 
     // Determine authentication listener based on storageEngine and authEnabled variable
     const determineAuthentication = async () => {
-      console.warn('[ReVISit][Auth] determineAuthentication() called', {
-        hasStorageEngine: Boolean(storageEngine),
-        storageEngine: storageEngine?.getEngine?.() ?? null,
-      });
       if (storageEngine && isCloudStorageEngine(storageEngine)) {
         try {
           const authInfo = await storageEngine.getUserManagementData('authentication');
-          console.warn('[ReVISit][Auth] authentication config fetched', {
-            authEnabled: authInfo?.isEnabled,
-          });
           if (authInfo?.isEnabled) {
-            console.warn('[ReVISit][Auth] Auth is enabled, registering Firebase auth listener');
             const cleanup = storageEngine.unsubscribe(handleAuthStateChanged);
             return cleanup;
           }
-          console.warn('[ReVISit][Auth] Auth is disabled, using non-auth user');
           setUser(nonAuthUser);
-        } catch (error) {
-          console.error('[ReVISit][Auth] Failed to determine authentication config', error);
-          console.warn('[ReVISit][Auth] Defaulting to auth listener registration after failure');
+        } catch {
           const cleanup = storageEngine.unsubscribe(handleAuthStateChanged);
           return cleanup;
         }
       } else if (storageEngine) {
-        console.warn('[ReVISit][Auth] Non-cloud storage engine detected, using non-auth user');
         setUser(nonAuthUser);
-      } else {
-        console.warn('[ReVISit][Auth] No storage engine available yet');
       }
       return () => {};
     };
@@ -191,7 +154,6 @@ export function AuthProvider({ children } : { children: ReactNode }) {
     const cleanupPromise = determineAuthentication();
 
     return () => {
-      console.warn('[ReVISit][Auth] Cleaning up auth effect');
       cleanupPromise.then((cleanup) => cleanup());
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps

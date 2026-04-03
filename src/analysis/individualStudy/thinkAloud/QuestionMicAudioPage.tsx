@@ -14,6 +14,7 @@ import { StudyConfig } from '../../../parser/types';
 import { ReactMarkdownWrapper } from '../../../components/ReactMarkdownWrapper';
 import { useStorageEngine } from '../../../storage/storageEngineHooks';
 import { ParticipantData } from '../../../storage/types';
+import { studyComponentToIndividualComponent } from '../../../utils/handleComponentInheritance';
 
 const localSummaryEndpoint = '/api/mic-group-summary';
 const configuredSummaryEndpoint = import.meta.env.VITE_MIC_GROUP_SUMMARY_API_URL?.trim();
@@ -23,6 +24,12 @@ const summaryEndpoint = configuredSummaryEndpoint
 type ParticipantClips = {
   participantId: string;
   clips: Array<{ name: string; url: string }>;
+};
+
+type GroupedClipEntry = {
+  participantId: string;
+  url: string;
+  selectedChoice?: string;
 };
 
 type SummaryClipEntry = {
@@ -159,6 +166,7 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
   const { studyId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { storageEngine } = useStorageEngine();
+  const isFirebase = storageEngine?.getEngine() === 'firebase';
 
   const [participants, setParticipants] = useState<ParticipantData[]>([]);
   const [loadingParticipants, setLoadingParticipants] = useState(false);
@@ -197,7 +205,7 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
         ? component.instruction
         : '';
 
-      responses.forEach((response) => {
+      responses.forEach((response: Parameters<typeof getQuestionMetadata>[0] & { id: string; prompt: string }) => {
         const clipName = response.id.split('/').pop() || response.id;
         const questionMetadata = getQuestionMetadata(response as Parameters<typeof getQuestionMetadata>[0]);
         const context: ClipQuestionContext = {
@@ -250,11 +258,19 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
   }, [participants, selectedQuestion, studyConfig]);
 
   const groupedByClipName = useMemo(() => {
-    const map = new Map<string, Array<{ participantId: string; url: string }>>();
+    const map = new Map<string, GroupedClipEntry[]>();
     clipsByParticipant.forEach((row) => {
       row.clips.forEach((clip) => {
+        const clipContext = clipQuestionContextByName.exact.get(clip.name)
+          || clipQuestionContextByName.normalized.get(normalizeJoinKey(clip.name))
+          || null;
+        const participant = participants.find((p) => p.participantId === row.participantId);
+        const trialAnswer = participant?.answers?.[selectedQuestion];
+        const selectedChoice = clipContext?.responseId
+          ? formatSelectedChoice(trialAnswer?.answer?.[clipContext.responseId])
+          : undefined;
         const existing = map.get(clip.name) || [];
-        existing.push({ participantId: row.participantId, url: clip.url });
+        existing.push({ participantId: row.participantId, url: clip.url, selectedChoice });
         map.set(clip.name, existing);
       });
     });
@@ -268,7 +284,7 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
         entries: entries.sort((a, b) => a.participantId.localeCompare(b.participantId)),
       }))
       .sort((a, b) => a.clipName.localeCompare(b.clipName));
-  }, [clipsByParticipant]);
+  }, [clipQuestionContextByName, clipsByParticipant, participants, selectedQuestion]);
 
   const summaryUnavailableReason = useMemo(() => {
     if (summaryEndpoint) return '';
@@ -276,23 +292,28 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
     return 'Summarization is not available in this deployment. GitHub Pages is a static host, so configure VITE_MIC_GROUP_SUMMARY_API_URL to point at a server endpoint that can call OpenAI.';
   }, []);
 
-  const summarizeGroup = async (group: { clipName: string; entries: Array<{ participantId: string; url: string }> }) => {
+  const summarizeGroup = async (group: { clipName: string; entries: GroupedClipEntry[] }) => {
     const clipContext = clipQuestionContextByName.exact.get(group.clipName)
       || clipQuestionContextByName.normalized.get(normalizeJoinKey(group.clipName))
       || null;
-    const clips: SummaryClipEntry[] = group.entries.map((entry) => {
-      const participant = participants.find((p) => p.participantId === entry.participantId);
-      const trialAnswer = participant?.answers?.[selectedQuestion];
-      const selectedChoice = clipContext?.responseId
-        ? formatSelectedChoice(trialAnswer?.answer?.[clipContext.responseId])
-        : undefined;
-
-      return {
-        participantId: entry.participantId,
-        url: entry.url,
-        selectedChoice,
-      };
-    });
+    const clips: SummaryClipEntry[] = group.entries.map((entry) => ({
+      participantId: entry.participantId,
+      url: entry.url,
+      selectedChoice: entry.selectedChoice,
+    }));
+    const requestBody = {
+      trialKey: selectedQuestion,
+      clipName: group.clipName,
+      responseId: clipContext?.responseId,
+      questionPrompt: clipContext?.questionPrompt,
+      componentId: clipContext?.componentId ?? selectedTrialContext?.componentId,
+      componentPrompt: clipContext?.componentPrompt ?? selectedTrialContext?.componentPrompt,
+      questionType: clipContext?.questionType,
+      condition: clipContext?.condition,
+      answerOptions: clipContext?.answerOptions,
+      answerFormatDescription: clipContext?.answerFormatDescription,
+      clips,
+    };
 
     setSummaryStatusByClip((prev) => ({
       ...prev,
@@ -304,28 +325,30 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
         throw new Error(summaryUnavailableReason || 'Summarization endpoint is not configured.');
       }
 
+      console.warn('[ReVISit][MicSummary][Browser] Sending summary request', {
+        endpoint: summaryEndpoint,
+        mode: import.meta.env.DEV ? 'dev' : 'prod',
+        requestBody,
+      });
       const response = await fetch(summaryEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          trialKey: selectedQuestion,
-          clipName: group.clipName,
-          responseId: clipContext?.responseId,
-          questionPrompt: clipContext?.questionPrompt,
-          componentId: clipContext?.componentId ?? selectedTrialContext?.componentId,
-          componentPrompt: clipContext?.componentPrompt ?? selectedTrialContext?.componentPrompt,
-          questionType: clipContext?.questionType,
-          condition: clipContext?.condition,
-          answerOptions: clipContext?.answerOptions,
-          answerFormatDescription: clipContext?.answerFormatDescription,
-          clips,
-        }),
+        body: JSON.stringify(requestBody),
       });
 
       const raw = await response.text();
       const contentType = response.headers.get('content-type') || '';
       const isJson = contentType.includes('application/json');
       const payload = raw && isJson ? JSON.parse(raw) : {};
+      console.warn('[ReVISit][MicSummary][Browser] Summary response received', {
+        endpoint: summaryEndpoint,
+        mode: import.meta.env.DEV ? 'dev' : 'prod',
+        ok: response.ok,
+        status: response.status,
+        statusText: response.statusText,
+        payload,
+        rawPreview: isJson ? undefined : raw.slice(0, 500),
+      });
       if (!isJson) {
         const compactBody = raw.replace(/\s+/g, ' ').slice(0, 120);
         throw new Error(
@@ -341,6 +364,12 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
       setSummaryByClip((prev) => ({ ...prev, [group.clipName]: payload.summary || '' }));
       setSummaryStatusByClip((prev) => ({ ...prev, [group.clipName]: { loading: false } }));
     } catch (error) {
+      console.error('[ReVISit][MicSummary][Browser] Summary request failed', {
+        endpoint: summaryEndpoint,
+        mode: import.meta.env.DEV ? 'dev' : 'prod',
+        clipName: group.clipName,
+        error,
+      });
       setSummaryStatusByClip((prev) => ({
         ...prev,
         [group.clipName]: {
@@ -498,17 +527,31 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
               </Group>
 
               {group.clipContext?.questionPrompt && (
-                <Text size="sm" mt={4}>
-                  {group.clipContext.questionPrompt}
-                </Text>
+                <Stack gap={2} mt={4}>
+                  <Text size="sm">
+                    {group.clipContext.questionPrompt}
+                  </Text>
+                  <Text size="xs" c="dimmed">
+                    Answer type:
+                    {' '}
+                    <Text span ff="monospace">{group.clipContext.questionType}</Text>
+                  </Text>
+                </Stack>
               )}
 
               <Stack gap="xs" mt="xs">
                 {group.entries.map((entry) => (
-                  <Group key={`${group.clipName}-${entry.participantId}`} justify="space-between" wrap="nowrap">
-                    <Text size="sm" ff="monospace" style={{ width: 420, overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      {entry.participantId}
-                    </Text>
+                  <Group key={`${group.clipName}-${entry.participantId}`} justify="space-between" wrap="nowrap" align="flex-start">
+                    <Box style={{ width: 420, overflow: 'hidden' }}>
+                      <Text size="sm" ff="monospace" style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {entry.participantId}
+                      </Text>
+                      <Text size="xs" c="dimmed" mt={2}>
+                        Answer:
+                        {' '}
+                        {entry.selectedChoice ?? 'No recorded answer'}
+                      </Text>
+                    </Box>
                     <audio controls src={entry.url} style={{ width: 360 }} />
                   </Group>
                 ))}

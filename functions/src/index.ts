@@ -11,11 +11,20 @@ const OPENAI_API_KEY = defineSecret('OPENAI_API_KEY');
 type ClipRequest = {
   participantId: string;
   url: string;
+  selectedChoice?: string;
 };
 
 type SummaryRequest = {
-  question?: string;
+  trialKey?: string;
   clipName?: string;
+  responseId?: string;
+  questionPrompt?: string;
+  componentId?: string;
+  componentPrompt?: string;
+  questionType?: string;
+  condition?: string;
+  answerOptions?: string[];
+  answerFormatDescription?: string;
   clips?: ClipRequest[];
 };
 
@@ -234,6 +243,7 @@ async function transcribeClip(
 
   return {
     participantId: clip.participantId,
+    selectedChoice: clip.selectedChoice,
     text: await (async () => {
       try {
         return await transcribeWithModel(
@@ -279,16 +289,89 @@ async function transcribeClip(
 async function summarizeTranscripts(
   apiKey: string,
   request: SummaryRequest,
-  transcripts: Array<{ participantId: string; text: string }>,
+  transcripts: Array<{ participantId: string; selectedChoice?: string; text: string }>,
 ) {
   const prompt = [
-    'Summarize the participants responses for this question.',
-    'Return a concise paragraph and 3-6 bullet points of themes.',
-    request.question ? `Question: ${request.question}` : null,
+    'Task',
+    '',
+    'You are analyzing individual recordings of participants answering questions in a data visualization study on the platform.',
+    'Each recording corresponds to one response to one question.',
+    'Your goal is to summarize the participant\'s decision-making and reasoning within that single response, while enabling comparison across conditions later.',
+    'Use only observable speech and interaction.',
+    'Do not infer intent beyond what is explicitly stated.',
+    '',
+    'Output Requirements (Per Recording)',
+    'Before the per-recording analysis, provide an "Overall Summary" section for the researcher/study owner.',
+    'That overall summary should briefly synthesize the main patterns across all recordings in this clip group so they can grasp the overall direction of responses quickly.',
+    'Include 3 short bullet points covering recurring claims, common reasoning patterns, and notable uncertainty/bias patterns if present.',
+    '',
+    'Then, for each recording below, provide the following fields:',
+    'Condition',
+    'Claim / Answer',
+    'Reasoning Process',
+    'Confidence Level',
+    'Uncertainty & Hesitation Signals',
+    'Bias / Heuristic Indicators (if present)',
+    'Visualization Influence (if observable)',
+    '',
+    'Codebook to Apply',
+    '1. Forming Assumptions',
+    'Making guesses about creator attributes.',
+    'Speculative reasoning from limited cues.',
+    'Filling gaps when information is missing.',
+    '2. Evidence-Based Reasoning',
+    'Referencing specific chart elements, labels, colors, structure, or comparisons within the chart.',
+    '3. Confidence & Uncertainty',
+    'High confidence, low confidence, hesitations, and self-corrections.',
+    '4. Bias & Heuristics',
+    'Stereotype-based reasoning, overgeneralizing from minimal cues, inferring identity from style/design.',
+    '5. Visualization-Driven Reasoning',
+    'Direct use of chart content to justify claims, ignoring available data, or misinterpreting visual elements.',
+    '',
+    'What to Look For',
+    'Speech: explicit answers and justifications, think-aloud reasoning, confidence markers, uncertainty, revisions.',
+    'Behavior (if visible in speech/transcript metadata only): pauses, hesitation, quick conclusions, or re-examining chart elements if stated.',
+    '',
+    'Important Rules',
+    'Treat each recording independently.',
+    'Do not assume knowledge of previous responses.',
+    'Do not compare across conditions in this step.',
+    'Focus strictly on the reasoning within the single response.',
+    'Ground everything in observable evidence only.',
+    'Format the result in Markdown.',
+    'Use this structure:',
+    '## Overall Summary',
+    '- bullet 1',
+    '- bullet 2',
+    '- bullet 3',
+    '',
+    '## Participant <id>',
+    '- Condition: ...',
+    '- Claim / Answer: ...',
+    '- Reasoning Process: ...',
+    '- Confidence Level: ...',
+    '- Uncertainty & Hesitation Signals: ...',
+    '- Bias / Heuristic Indicators: ...',
+    '- Visualization Influence: ...',
+    '',
+    'Question Context',
+    request.condition ? `Condition: ${request.condition}` : null,
+    request.questionPrompt ? `Question: ${request.questionPrompt}` : null,
+    request.componentPrompt ? `Study instruction: ${request.componentPrompt}` : null,
+    request.questionType ? `Response type: ${request.questionType}` : null,
+    request.answerOptions?.length ? `Answer options: ${request.answerOptions.join(', ')}` : null,
+    request.answerFormatDescription ? `Answer format: ${request.answerFormatDescription}` : null,
+    request.componentId ? `Component: ${request.componentId}` : null,
+    request.responseId ? `Response id: ${request.responseId}` : null,
+    request.trialKey ? `Trial key: ${request.trialKey}` : null,
     request.clipName ? `Clip group: ${request.clipName}` : null,
     '',
-    'Transcripts:',
-    ...transcripts.map((transcript) => `Participant ${transcript.participantId}: ${transcript.text}`),
+    'Recordings to Analyze:',
+    ...transcripts.map((transcript) => [
+      `Participant ${transcript.participantId}`,
+      transcript.selectedChoice ? `Selected response: ${transcript.selectedChoice}` : null,
+      `Transcript: ${transcript.text}`,
+    ].filter(Boolean).join('\n')),
   ].filter(Boolean).join('\n');
 
   const summaryResponse = await fetch('https://api.openai.com/v1/chat/completions', {
