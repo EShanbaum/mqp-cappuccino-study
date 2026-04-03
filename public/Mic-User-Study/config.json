@@ -333,10 +333,10 @@
                 }
             ]
         },
-        "B1C-obscured": {
+        "B2A-obscured": {
             "type": "image",
-            "description": "obscured B1-C stimulus",
-            "path": "Mic-User-Study/assets/B1C-obscured.png",
+            "description": "obscured B2-A stimulus",
+            "path": "Mic-User-Study/assets/B2A-obscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
                 "width": "800px",
@@ -345,7 +345,7 @@
             },
             "response": [
                 {
-                    "id": "mic-user-study/b1c-obscured-encounter",
+                    "id": "mic-user-study/b2a-obscured-encounter",
                     "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
                     "location": "sidebar",
                     "type": "radio",
@@ -356,7 +356,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-age",
+                    "id": "mic-user-study/b2a-obscured-age",
                     "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
@@ -369,7 +369,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-gender",
+                    "id": "mic-user-study/b2a-obscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
                     "type": "radio",
@@ -381,7 +381,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-politics",
+                    "id": "mic-user-study/b2a-obscured-politics",
                     "prompt": "Are their politics more likely left-leaning or right-leaning?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -399,7 +399,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-alignment",
+                    "id": "mic-user-study/b2a-obscured-alignment",
                     "prompt": "Do they likely share your values?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -417,7 +417,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-intention",
+                    "id": "mic-user-study/b2a-obscured-intention",
                     "prompt": "Is their intent more likely to persuade or inform?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -435,7 +435,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-trust",
+                    "id": "mic-user-study/b2a-obscured-trust",
                     "prompt": "How trustworthy are they?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -453,7 +453,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-beauty",
+                    "id": "mic-user-study/b2a-obscured-beauty",
                     "prompt": "How aesthetically pleasing is this image?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -471,7 +471,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-obscured-explain",
+                    "id": "mic-user-study/b2a-obscured-explain",
                     "prompt": "Explain what the maker of this chart is trying to demonstrate:",
                     "location": "sidebar",
                     "type": "checkbox",
@@ -482,10 +482,10 @@
                 }
             ]
         },
-        "B1C-unobscured": {
+        "B2A-unobscured": {
             "type": "image",
-            "description": "Unobscured B1-C stimulus",
-            "path": "Mic-User-Study/assets/B1C-unobscured.png",
+            "description": "Unobscured B2-A stimulus",
+            "path": "Mic-User-Study/assets/B2A-unobscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
                 "width": "800px",
@@ -494,7 +494,7 @@
             },
             "response": [
                 {
-                    "id": "mic-user-study/b1c-unobscured-encounter",
+                    "id": "mic-user-study/b2a-unobscured-encounter",
                     "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
                     "location": "sidebar",
                     "type": "radio",
@@ -505,7 +505,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-age",
+                    "id": "mic-user-study/b2a-unobscured-age",
                     "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
@@ -518,7 +518,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-gender",
+                    "id": "mic-user-study/b2a-unobscured-gender",
                     "prompt": "What gender do they most likely identify with?",
                     "location": "sidebar",
                     "type": "radio",
@@ -530,7 +530,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-politics",
+                    "id": "mic-user-study/b2a-unobscured-politics",
                     "prompt": "Are their politics more likely left-leaning or right-leaning?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -548,7 +548,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-alignment",
+                    "id": "mic-user-study/b2a-unobscured-alignment",
                     "prompt": "Do they likely share your values?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -566,7 +566,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-intention",
+                    "id": "mic-user-study/b2a-unobscured-intention",
                     "prompt": "Is their intent more likely to persuade or inform?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -584,7 +584,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-trust",
+                    "id": "mic-user-study/b2a-unobscured-trust",
                     "prompt": "How trustworthy are they?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -602,7 +602,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-beauty",
+                    "id": "mic-user-study/b2a-unobscured-beauty",
                     "prompt": "How aesthetically pleasing is this image?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -620,7 +620,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b1c-unobscured-explain",
+                    "id": "mic-user-study/b2a-unobscured-explain",
                     "prompt": "Explain what the maker of this chart is trying to demonstrate:",
                     "location": "sidebar",
                     "type": "checkbox",
@@ -695,8 +695,8 @@
             "Introduction",
             "B0-obscured",
             "B0-unobscured",
-            "B1C-obscured",
-            "B1C-unobscured",
+            "B2A-obscured",
+            "B2A-unobscured",
             "Feedback"
         ]
     }
