@@ -1,4 +1,5 @@
 import {
+  Accordion,
   Box,
   Button,
   Group,
@@ -50,6 +51,17 @@ type ClipQuestionContext = {
   answerFormatDescription: string;
 };
 
+type ParsedParticipantSummary = {
+  id: string;
+  title: string;
+  content: string;
+};
+
+type ParsedSummary = {
+  overall: string;
+  participants: ParsedParticipantSummary[];
+};
+
 function normalizeJoinKey(value: string) {
   return value.toLowerCase().replace(/[^a-z0-9]/g, '');
 }
@@ -76,6 +88,43 @@ function getConditionLabel(value: string) {
 
 function formatStringOptions(options: Array<string | { label: string; value: string }>) {
   return options.map((option) => (typeof option === 'string' ? option : `${option.label} (${option.value})`));
+}
+
+function parseSummarySections(summary: string): ParsedSummary {
+  const normalized = summary.replace(/\r\n/g, '\n').trim();
+  if (!normalized) {
+    return { overall: '', participants: [] };
+  }
+
+  const sections = normalized.split(/^##\s+/m).filter(Boolean);
+  let overall = '';
+  const participants: ParsedParticipantSummary[] = [];
+
+  sections.forEach((section) => {
+    const [rawTitle = '', ...bodyLines] = section.split('\n');
+    const title = rawTitle.trim();
+    const content = bodyLines.join('\n').trim();
+
+    if (/^Overall Summary$/i.test(title)) {
+      overall = content;
+      return;
+    }
+
+    if (/^Participant\b/i.test(title)) {
+      const participantId = title.replace(/^Participant\s*/i, '').trim() || title;
+      participants.push({
+        id: participantId,
+        title,
+        content,
+      });
+    }
+  });
+
+  if (!overall && participants.length === 0) {
+    return { overall: normalized, participants: [] };
+  }
+
+  return { overall, participants };
 }
 
 function getQuestionMetadata(response: {
@@ -186,6 +235,12 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
   const [clipsByParticipant, setClipsByParticipant] = useState<ParticipantClips[]>([]);
   const [summaryByClip, setSummaryByClip] = useState<Record<string, string>>({});
   const [summaryStatusByClip, setSummaryStatusByClip] = useState<Record<string, { loading: boolean; error?: string }>>({});
+  const parsedSummaryByClip = useMemo(
+    () => Object.fromEntries(
+      Object.entries(summaryByClip).map(([clipName, summary]) => [clipName, parseSummarySections(summary)]),
+    ),
+    [summaryByClip],
+  );
 
   const clipQuestionContextByName = useMemo(() => {
     const contextByName = new Map<string, ClipQuestionContext>();
@@ -576,7 +631,51 @@ export function QuestionMicAudioPage({ studyConfig }: { studyConfig?: StudyConfi
                 >
                   <Text size="sm" fw={600}>Summary</Text>
                   <Box mt="xs">
-                    <ReactMarkdownWrapper text={summaryByClip[group.clipName]} />
+                    <Accordion multiple defaultValue={['overall-summary', 'participant-summaries']} variant="separated">
+                      <Accordion.Item value="overall-summary">
+                        <Accordion.Control>
+                          <Text fw={600}>Overall Summary</Text>
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                          <ReactMarkdownWrapper
+                            text={parsedSummaryByClip[group.clipName]?.overall || summaryByClip[group.clipName]}
+                          />
+                        </Accordion.Panel>
+                      </Accordion.Item>
+
+                      <Accordion.Item value="participant-summaries">
+                        <Accordion.Control>
+                          <Text fw={600}>
+                            Per Participant Summary
+                            {' '}
+                            {parsedSummaryByClip[group.clipName]?.participants.length
+                              ? `(${parsedSummaryByClip[group.clipName].participants.length})`
+                              : ''}
+                          </Text>
+                        </Accordion.Control>
+                        <Accordion.Panel>
+                          {parsedSummaryByClip[group.clipName]?.participants.length ? (
+                            <Accordion multiple variant="contained">
+                              {parsedSummaryByClip[group.clipName].participants.map((participantSummary) => (
+                                <Accordion.Item
+                                  key={`${group.clipName}-${participantSummary.id}`}
+                                  value={participantSummary.id}
+                                >
+                                  <Accordion.Control>
+                                    <Text fw={500}>{participantSummary.title}</Text>
+                                  </Accordion.Control>
+                                  <Accordion.Panel>
+                                    <ReactMarkdownWrapper text={participantSummary.content} />
+                                  </Accordion.Panel>
+                                </Accordion.Item>
+                              ))}
+                            </Accordion>
+                          ) : (
+                            <Text size="sm" c="dimmed">No per-participant sections found.</Text>
+                          )}
+                        </Accordion.Panel>
+                      </Accordion.Item>
+                    </Accordion>
                   </Box>
                 </Box>
               )}
