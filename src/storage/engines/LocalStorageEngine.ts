@@ -226,6 +226,43 @@ export class LocalStorageEngine extends StorageEngine {
     return URL.createObjectURL(screenRecordingBlob);
   }
 
+  override async getQuestionMicFiles(task: string, participantId: string): Promise<Array<{ name: string; url: string }>> {
+    await this.verifyStudyDatabase();
+    if (this.studyId === undefined) {
+      throw new Error('Study ID is not set');
+    }
+
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const taskNeedle = normalize(task);
+    const keyPrefix = `${this.collectionPrefix}${this.studyId}/audio/${participantId}_`;
+
+    const keys = await this.studyDatabase.keys();
+    const matchingKeys = keys.filter((key) => {
+      if (!key.startsWith(keyPrefix)) return false;
+      if (!key.includes('mic-user-study')) return false;
+      return normalize(key).includes(taskNeedle);
+    });
+
+    const files = await Promise.all(
+      matchingKeys.map(async (key) => {
+        const blob = await this.studyDatabase.getItem<Blob>(key);
+        if (!(blob instanceof Blob)) {
+          return null;
+        }
+
+        const suffix = key.slice(key.lastIndexOf('/') + 1);
+        return {
+          name: suffix,
+          url: URL.createObjectURL(blob),
+        };
+      }),
+    );
+
+    return files
+      .filter((file): file is { name: string; url: string } => file !== null)
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   protected async _testingReset(studyId: string) {
     if (!studyId) {
       throw new Error('Study ID is required for reset');

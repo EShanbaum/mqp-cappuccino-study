@@ -1,4 +1,3 @@
-import { parse as hjsonParse } from 'hjson';
 import { initializeApp } from 'firebase/app';
 import {
   deleteObject,
@@ -55,26 +54,14 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
   constructor(testing: boolean = false) {
     super('firebase', testing);
 
-    console.warn('[ReVISit][Firebase] Constructing FirebaseStorageEngine', {
-      testing,
-      hasFirebaseConfig: Boolean(import.meta.env.VITE_FIREBASE_CONFIG),
-      hasRecaptchaToken: Boolean(this.RECAPTCHAV3TOKEN),
-    });
-
-    const firebaseConfig = hjsonParse(import.meta.env.VITE_FIREBASE_CONFIG);
-    console.warn('[ReVISit][Firebase] Parsed Firebase config', {
-      configKeys: Object.keys(firebaseConfig || {}),
-    });
+    const firebaseConfig = JSON.parse(import.meta.env.VITE_FIREBASE_CONFIG);
     const firebaseApp = initializeApp(firebaseConfig);
-    console.warn('[ReVISit][Firebase] Firebase app initialized');
     this.firestore = initializeFirestore(firebaseApp, {});
-    console.warn('[ReVISit][Firebase] Firestore initialized');
     this.studyCollection = collection(
       this.firestore,
       '_revisit',
     );
     this.storage = getStorage();
-    console.warn('[ReVISit][Firebase] Storage initialized');
 
     // Check if we're in dev, if so use a debug token
     if (import.meta.env.DEV) {
@@ -86,9 +73,8 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
         provider: new ReCaptchaV3Provider(this.RECAPTCHAV3TOKEN),
         isTokenAutoRefreshEnabled: false,
       });
-      console.warn('[ReVISit][Firebase] App Check initialized');
     } catch {
-      console.warn('Failed to initialize Firebase App Check');
+      // Ignore App Check initialization failures here.
     }
   }
 
@@ -105,9 +91,7 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
       const fullProvStr = await response.text();
       storageObj = JSON.parse(fullProvStr);
     } catch {
-      console.warn(
-        `${prefix} does not have ${type} for ${this.collectionPrefix}${this.studyId}.`,
-      );
+      // Missing storage objects are allowed here.
     }
 
     return storageObj;
@@ -361,19 +345,17 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
       );
       this.studyId = studyId;
     } catch {
-      console.warn('Failed to connect to Firebase.');
+      // Leave engine disconnected when Firebase setup fails.
     }
   }
 
   async connect() {
     try {
-      console.warn('[ReVISit][Firebase] connect() starting');
       await enableNetwork(this.firestore);
 
       this.connected = true;
-      console.warn('[ReVISit][Firebase] connect() succeeded');
     } catch {
-      console.warn('Failed to connect to Firebase');
+      // Leave engine disconnected when Firebase network enablement fails.
     }
   }
 
@@ -428,7 +410,6 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
     try {
       return await getDownloadURL(audioRef);
     } catch {
-      console.warn(`Audio for task ${task} and participant ${participantId} not found.`);
       return null;
     }
   }
@@ -443,7 +424,6 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
     try {
       return await getDownloadURL(screenRecordingRef);
     } catch {
-      console.warn(`Screen recording for task ${task} and participant ${participantId} not found.`);
       return null;
     }
   }
@@ -458,7 +438,6 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
     try {
       return await getDownloadURL(transcriptRef);
     } catch {
-      console.warn(`Transcript for task ${task} and participant ${participantId} not found.`);
       return null;
     }
   }
@@ -681,11 +660,7 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
         if (metadata[directoryName]) {
           delete metadata[directoryName];
           await setDoc(snapshotDoc, metadata);
-        } else {
-          console.warn(`${directoryName} does not exist in metadata.`);
         }
-      } else {
-        console.warn('No metadata found.');
       }
     } catch (error) {
       console.error('Error removing collection from metadata:', error);
@@ -725,10 +700,6 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
   async getUserManagementData(
     key: 'authentication' | 'adminUsers',
   ): Promise<{ isEnabled: boolean } | { adminUsersList: StoredUser[] } | undefined> {
-    console.warn('[ReVISit][Firebase] getUserManagementData called', {
-      key,
-      cachePopulated: Object.keys(this.userManagementData).length > 0,
-    });
     if (Object.keys(this.userManagementData).length === 0) {
       // Get the user-management collection in Firestore
       const userManagementCollection = collection(
@@ -737,10 +708,6 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
       );
       // Grabs all user-management data and returns data based on key
       const querySnapshot = await getDocs(userManagementCollection);
-      console.warn('[ReVISit][Firebase] user-management query completed', {
-        docIds: querySnapshot.docs.map((queryDoc) => queryDoc.id),
-        docCount: querySnapshot.docs.length,
-      });
       // Converts querySnapshot data to Object
       const docsObject = Object.fromEntries(
         querySnapshot.docs.map((queryDoc) => [queryDoc.id, queryDoc.data()]),
@@ -752,22 +719,15 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
       if (key === 'authentication') {
         const value = this.userManagementData[key];
         if (value && typeof value === 'object' && 'isEnabled' in value) {
-          console.warn('[ReVISit][Firebase] Returning authentication config', {
-            isEnabled: value.isEnabled,
-          });
           return value as { isEnabled: boolean };
         }
       } else if (key === 'adminUsers') {
         const value = this.userManagementData[key];
         if (value && typeof value === 'object' && 'adminUsersList' in value) {
-          console.warn('[ReVISit][Firebase] Returning admin users config', {
-            adminUserCount: value.adminUsersList.length,
-          });
           return value as { adminUsersList: StoredUser[] };
         }
       }
     }
-    console.warn('[ReVISit][Firebase] No user-management data found for key', { key });
     return undefined;
   }
 
@@ -825,15 +785,9 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
   }
 
   async login() {
-    console.warn('[ReVISit][Firebase] login() invoked');
     const provider = new GoogleAuthProvider();
     const auth = getAuth();
     signInWithPopup(auth, provider, browserPopupRedirectResolver);
-
-    console.warn('[ReVISit][Firebase] login() returned current auth user snapshot', {
-      email: auth.currentUser?.email || null,
-      uidPresent: Boolean(auth.currentUser?.uid),
-    });
 
     return {
       email: auth.currentUser?.email || null,
@@ -843,14 +797,12 @@ export class FirebaseStorageEngine extends CloudStorageEngine {
 
   unsubscribe(callback: (cloudUser: StoredUser | null) => Promise<void>) {
     const auth = getAuth();
-    console.warn('[ReVISit][Firebase] Registering auth state listener');
     const unsubscribe = onAuthStateChanged(auth, async (cloudUser) => await callback(cloudUser));
     return () => unsubscribe();
   }
 
   async logout() {
     const auth = getAuth();
-    console.warn('[ReVISit][Firebase] logout() invoked');
     await signOut(auth);
   }
 
