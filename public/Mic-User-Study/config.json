@@ -636,52 +636,73 @@
             "response": [
                 {
                     "id": "mic-user-study/feedback-usefulness",
+                    "required": true,
                     "prompt": "How useful did you find the ability to record audio explanations alongside your survey answers?",
                     "type": "likert",
                     "leftLabel": "Not Useful",
                     "rightLabel": "Very Useful",
+                    "location": "belowStimulus",
                     "numItems": 5
                 },
                 {
                     "id": "mic-user-study/feedback-situations",
+                    "required": true,
                     "prompt": "In what situations do you think this feature would be most useful?",
+                    "location": "belowStimulus",
                     "type": "longText"
                 },
                 {
                     "id": "mic-user-study/feedback-confusion",
+                    "required": true,
                     "prompt": "Did you encounter any confusion while using the feature? If so, what caused it?",
+                    "location": "belowStimulus",
                     "type": "longText"
                 },
                 {
                     "id": "mic-user-study/feedback-which-questions",
+                    "required": true,
                     "prompt": "If you didn’t use the audio feature for certain questions, what stopped you?",
+                    "location": "belowStimulus",
                     "type": "longText"
                 },
                 {
                     "id": "mic-user-study/feedback-quality",
+                    "required": true,
                     "prompt": "How would you rate the audio recording quality?",
                     "type": "likert",
                     "leftLabel": "Low Quality",
                     "rightLabel": "High Quality",
+                    "location": "belowStimulus",
                     "numItems": 5
                 },
                 {
                     "id": "mic-user-study/feedback-suggestions",
+                    "required": true,
                     "prompt": "What improvements would you suggest for the audio recording experience? Include any additional features you believe would be useful.",
+                    "location": "belowStimulus",
                     "type": "longText"
                 },
                 {
                     "id": "mic-user-study/feedback-likeliness",
+                    "required": true,
                     "prompt": "How likely would you be to use this audio feature in a real survey?",
                     "type": "likert",
                     "leftLabel": "Not Likely At All",
                     "rightLabel": "Very Likely",
+                    "location": "belowStimulus",
                     "numItems": 5
-                },
+                }
+            ]
+        },
+        "Closer": {
+            "type": "questionnaire",
+            "response": [
                 {
                     "id": "mic-user-study/prolific-redirect",
+                    "required": true,
                     "prompt": "Please Submit before using this code in Prolific: C13W36EB",
                     "type":"checkbox",
+                    "location": "belowStimulus",
                     "options":[
                         "Understood"
                     ]
@@ -697,7 +718,8 @@
             "B0-unobscured",
             "B1C-obscured",
             "B1C-unobscured",
-            "Feedback"
+            "Feedback",
+            "Closer"
         ]
     }
 }
