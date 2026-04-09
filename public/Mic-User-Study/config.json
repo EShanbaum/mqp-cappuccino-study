@@ -47,17 +47,6 @@
             },
             "response": [
                 {
-                    "id": "mic-user-study/b0-obscured-encounter",
-                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Scroll",
-                        "Read"
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b0-obscured-age",
                     "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
@@ -67,18 +56,6 @@
                         "Gen-X",
                         "Millenial",
                         "Gen-Z"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-gender",
-                    "prompt": "What gender do they most likely identify with?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Male",
-                        "Female",
-                        "Other"
                     ],
                     "withMicrophone": true
                 },
@@ -95,24 +72,6 @@
                         },
                         {
                             "label": "Right-Leaning",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-obscured-alignment",
-                    "prompt": "Do they likely share your values?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "No",
-                            "value": 0
-                        },
-                        {
-                            "label": "Yes",
                             "value": 100
                         }
                     ],
@@ -184,155 +143,6 @@
                 }
             ]
         },
-        "B0-unobscured": {
-            "type": "image",
-            "description": "unobscured image of b0 stimuli",
-            "path": "Mic-User-Study/assets/b0-unobscured.png",
-            "instruction": "Please answer the following questions about the maker of this chart",
-            "style": {
-                "width": "800px",
-                "position": "sticky",
-                "top": "80px"
-            },
-            "response": [
-                {
-                    "id": "mic-user-study/b0-unobscured-encounter",
-                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Scroll",
-                        "Read"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-age",
-                    "prompt": "What generation is the creator of the chart most likely from?",
-                    "location": "sidebar",
-                    "type": "dropdown",
-                    "options": [
-                        "Boomer",
-                        "Gen-X",
-                        "Millenial",
-                        "Gen-Z"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-gender",
-                    "prompt": "What gender do they most likely identify with?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Male",
-                        "Female",
-                        "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-politics",
-                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Left-Leaning",
-                            "value": 0
-                        },
-                        {
-                            "label": "Right-Leaning",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-alignment",
-                    "prompt": "Do they likely share your values?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "No",
-                            "value": 0
-                        },
-                        {
-                            "label": "Yes",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-intention",
-                    "prompt": "Is their intent more likely to persuade or inform?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Persuade",
-                            "value": 0
-                        },
-                        {
-                            "label": "Inform",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-trust",
-                    "prompt": "How trustworthy are they?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Untrustworthy",
-                            "value": 0
-                        },
-                        {
-                            "label": "Trustworthy",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-beauty",
-                    "prompt": "How aesthetically pleasing is this image?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "Not at all",
-                            "value": 0
-                        },
-                        {
-                            "label": "Very much",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b0-unobscured-explain",
-                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
-                    "location": "sidebar",
-                    "type": "checkbox",
-                    "options": [
-                        "Click here once finished responding"
-                    ],
-                    "withMicrophone": true
-                }
-            ]
-        },
         "B2A-obscured": {
             "type": "image",
             "description": "obscured B2-A stimulus",
@@ -345,17 +155,6 @@
             },
             "response": [
                 {
-                    "id": "mic-user-study/b2a-obscured-encounter",
-                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Scroll",
-                        "Read"
-                    ],
-                    "withMicrophone": true
-                },
-                {
                     "id": "mic-user-study/b2a-obscured-age",
                     "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
@@ -365,18 +164,6 @@
                         "Gen-X",
                         "Millenial",
                         "Gen-Z"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b2a-obscured-gender",
-                    "prompt": "What gender do they most likely identify with?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Male",
-                        "Female",
-                        "Other"
                     ],
                     "withMicrophone": true
                 },
@@ -393,24 +180,6 @@
                         },
                         {
                             "label": "Right-Leaning",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b2a-obscured-alignment",
-                    "prompt": "Do they likely share your values?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "No",
-                            "value": 0
-                        },
-                        {
-                            "label": "Yes",
                             "value": 100
                         }
                     ],
@@ -482,10 +251,10 @@
                 }
             ]
         },
-        "B2A-unobscured": {
+        "B1C-obscured": {
             "type": "image",
-            "description": "Unobscured B2-A stimulus",
-            "path": "Mic-User-Study/assets/B2A-unobscured.png",
+            "description": "obscured B1-C stimulus",
+            "path": "Mic-User-Study/assets/B1C-obscured.png",
             "instruction": "Please answer the following questions about the maker of this chart",
             "style": {
                 "width": "800px",
@@ -494,18 +263,7 @@
             },
             "response": [
                 {
-                    "id": "mic-user-study/b2a-unobscured-encounter",
-                    "prompt": "As you're scrolling through your feed, you see this image. What would you do?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Scroll",
-                        "Read"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b2a-unobscured-age",
+                    "id": "mic-user-study/b1c-obscured-age",
                     "prompt": "What generation is the creator of the chart most likely from?",
                     "location": "sidebar",
                     "type": "dropdown",
@@ -518,19 +276,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b2a-unobscured-gender",
-                    "prompt": "What gender do they most likely identify with?",
-                    "location": "sidebar",
-                    "type": "radio",
-                    "options": [
-                        "Male",
-                        "Female",
-                        "Other"
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b2a-unobscured-politics",
+                    "id": "mic-user-study/b1c-obscured-politics",
                     "prompt": "Are their politics more likely left-leaning or right-leaning?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -548,25 +294,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b2a-unobscured-alignment",
-                    "prompt": "Do they likely share your values?",
-                    "location": "sidebar",
-                    "type" : "slider",
-                    "startingValue": 50,
-                    "options": [
-                        {
-                            "label": "No",
-                            "value": 0
-                        },
-                        {
-                            "label": "Yes",
-                            "value": 100
-                        }
-                    ],
-                    "withMicrophone": true
-                },
-                {
-                    "id": "mic-user-study/b2a-unobscured-intention",
+                    "id": "mic-user-study/b1c-obscured-intention",
                     "prompt": "Is their intent more likely to persuade or inform?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -584,7 +312,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b2a-unobscured-trust",
+                    "id": "mic-user-study/b1c-obscured-trust",
                     "prompt": "How trustworthy are they?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -602,7 +330,7 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b2a-unobscured-beauty",
+                    "id": "mic-user-study/b1c-obscured-beauty",
                     "prompt": "How aesthetically pleasing is this image?",
                     "location": "sidebar",
                     "type" : "slider",
@@ -620,7 +348,115 @@
                     "withMicrophone": true
                 },
                 {
-                    "id": "mic-user-study/b2a-unobscured-explain",
+                    "id": "mic-user-study/b1c-obscured-explain",
+                    "prompt": "Explain what the maker of this chart is trying to demonstrate:",
+                    "location": "sidebar",
+                    "type": "checkbox",
+                    "options": [
+                        "Click here once finished responding"
+                    ],
+                    "withMicrophone": true
+                }
+            ]
+        },
+        "B1B-obscured": {
+            "type": "image",
+            "description": "obscured B1-B stimulus",
+            "path": "Mic-User-Study/assets/B1B-obscured.png",
+            "instruction": "Please answer the following questions about the maker of this chart",
+            "style": {
+                "width": "800px",
+                "position": "sticky",
+                "top": "80px"
+            },
+            "response": [
+                {
+                    "id": "mic-user-study/b1b-obscured-age",
+                    "prompt": "What generation is the creator of the chart most likely from?",
+                    "location": "sidebar",
+                    "type": "dropdown",
+                    "options": [
+                        "Boomer",
+                        "Gen-X",
+                        "Millenial",
+                        "Gen-Z"
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1b-obscured-politics",
+                    "prompt": "Are their politics more likely left-leaning or right-leaning?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Left-Leaning",
+                            "value": 0
+                        },
+                        {
+                            "label": "Right-Leaning",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1b-obscured-intention",
+                    "prompt": "Is their intent more likely to persuade or inform?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Persuade",
+                            "value": 0
+                        },
+                        {
+                            "label": "Inform",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1b-obscured-trust",
+                    "prompt": "How trustworthy are they?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Untrustworthy",
+                            "value": 0
+                        },
+                        {
+                            "label": "Trustworthy",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1b-obscured-beauty",
+                    "prompt": "How aesthetically pleasing is this image?",
+                    "location": "sidebar",
+                    "type" : "slider",
+                    "startingValue": 50,
+                    "options": [
+                        {
+                            "label": "Not at all",
+                            "value": 0
+                        },
+                        {
+                            "label": "Very much",
+                            "value": 100
+                        }
+                    ],
+                    "withMicrophone": true
+                },
+                {
+                    "id": "mic-user-study/b1b-obscured-explain",
                     "prompt": "Explain what the maker of this chart is trying to demonstrate:",
                     "location": "sidebar",
                     "type": "checkbox",
@@ -700,7 +536,7 @@
                 {
                     "id": "mic-user-study/prolific-redirect",
                     "required": true,
-                    "prompt": "Please Submit before using this code in Prolific: C13W36EB",
+                    "prompt": "Please Submit before using this code in Prolific: CTXSJW55",
                     "type":"checkbox",
                     "location": "belowStimulus",
                     "options":[
@@ -715,9 +551,9 @@
         "components": [
             "Introduction",
             "B0-obscured",
-            "B0-unobscured",
             "B2A-obscured",
-            "B2A-unobscured",
+            "B1C-obscured",
+            "B1B-obscured",
             "Feedback",
             "Closer"
         ]
